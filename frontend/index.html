@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Protección Legal - Reclamos Bancarios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in { animation: fadeIn .9s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+    .btn-cta { transition: transform .2s ease, box-shadow .2s ease; }
+    .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(0,0,0,.12); }
+    .panel { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .modal-open { overflow: hidden; }
+    .step-dot { height: 8px; border-radius: 9999px; }
+    .input { width:100%; border:1px solid rgb(226,232,240); border-radius:.75rem; padding:.7rem 1rem; outline: none;}
+    .input:focus { box-shadow: 0 0 0 3px rgba(79,70,229,.25); border-color: rgb(79,70,229);}
+    .icon-btn { display:inline-flex; align-items:center; justify-content:center; border:1px solid rgb(226,232,240); border-radius:.6rem; width:40px; height:40px; }
+    .toast { position: fixed; inset-inline-end: 1rem; inset-block-start: 1rem; z-index: 80; }
+    .toast-error { position: fixed; inset-inline-end: 1rem; inset-block-start: 4.5rem; z-index: 80; }
+    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.6); border-top-color: white; border-radius: 9999px; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg);} }
+    .skeleton { background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+    @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+  <!-- Header -->
+  <header class="fixed w-full z-50 bg-white/90 backdrop-blur shadow">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-indigo-900 flex items-center gap-2">
+        <!-- Logo -->
+        <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <defs><linearGradient id="plg" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+          <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg)"/>
+          <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Protección Legal</span>
+      </h1>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#inicio" class="hover:text-indigo-700">Inicio</a>
+        <a href="#novedades" class="hover:text-indigo-700">Novedades</a>
+        <a href="#servicios" class="hover:text-indigo-700">Servicios</a>
+        <a href="#" id="navReclamo" class="hover:text-indigo-700">Iniciar reclamo</a>
+        <a href="#login" id="linkLogin" class="hover:text-indigo-700">Iniciar sesión</a>
+        <span id="greeting" class="hidden text-slate-600">Hola, —</span>
+        <button id="btnLogout" class="hidden px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Cerrar sesión</button>
+      </nav>
+      <div class="md:hidden flex items-center gap-2">
+        <span id="greetingMobile" class="hidden text-slate-600 text-sm">Hola, —</span>
+        <button id="btnLogoutMobile" class="hidden px-3 py-2 rounded-lg border border-slate-300 text-sm">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero con slogan + consulta -->
+  <section id="inicio" class="relative pt-28 pb-16 bg-center bg-cover" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80');">
+    <div class="absolute inset-0 bg-gradient-to-b from-indigo-900/80 via-indigo-900/70 to-indigo-900/60"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+      <div class="text-white fade-in">
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1 mb-4">
+          <span class="text-xs uppercase tracking-wider">Defensa del consumidor financiero</span>
+        </div>
+        <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">Cortá el fraude. Recuperá tu dinero.</h2>
+        <p class="mt-4 text-lg text-indigo-100">Asesoramiento legal claro y efectivo ante estafas bancarias y operaciones no autorizadas.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button id="btnAbrirReclamo" class="btn-cta bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold px-6 py-3 rounded-lg">Iniciar reclamo (sin registro)</button>
+          <a id="ctaPanel" href="#login" class="btn-cta bg-white/90 hover:bg-white text-indigo-900 font-semibold px-6 py-3 rounded-lg">Seguir mi reclamo</a>
+        </div>
+      </div>
+
+      <!-- Consulta simple -->
+      <div class="panel fade-in">
+        <div class="flex items-center gap-3 mb-2">
+          <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <defs><linearGradient id="plg2" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg2)"/>
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="text-xl font-bold text-indigo-900">Hacé tu consulta</h3>
+        </div>
+        <form id="formConsulta" class="space-y-4">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="text-sm text-slate-600">Nombre</label>
+              <input name="nombre" required class="input" placeholder="Tu nombre">
+            </div>
+            <div>
+              <label class="text-sm text-slate-600">Email</label>
+              <input name="email" type="email" required class="input" placeholder="tucorreo@dominio.com">
+            </div>
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Consulta</label>
+            <textarea name="mensaje" rows="4" required class="input" placeholder="Contanos brevemente tu consulta"></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm text-slate-600">
+              <input id="consulta-consent" type="checkbox" required> Acepto el tratamiento de mis datos
+            </label>
+            <button id="btnEnviarConsulta" class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar consulta</button>
+          </div>
+        </form>
+        <p class="mt-3 text-xs text-slate-500">Respuesta inicial dentro de las próximas horas hábiles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Novedades -->
+  <section id="novedades" class="py-20 max-w-7xl mx-auto px-6">
+    <h3 class="text-3xl font-bold text-center mb-14 text-indigo-900">Novedades</h3>
+    <div class="grid md:grid-cols-3 gap-8">
+      <article class="panel overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <h4 class="font-semibold text-lg mb-2 text-indigo-900">Nuevo fallo protege a consumidores</h4>
+        <p class="text-sm text-gray-600">Los bancos deben asumir responsabilidad por compras con identidad suplantada.</p>
+      </article>
+      <article class="panel overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1581092334651-ddf4b1f1c3d0?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <h4 class="font-semibold text-lg mb-2 text-indigo-900">Cómo protegerte de estafas</h4>
+        <p class="text-sm text-gray-600">Cinco claves para evitar fraudes y operaciones no autorizadas.</p>
+      </article>
+      <article class="panel overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <h4 class="font-semibold text-lg mb-2 text-indigo-900">Casos de éxito</h4>
+        <p class="text-sm text-gray-600">Historias reales de clientes que recuperaron su dinero.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Servicios (iconografía) -->
+  <section id="servicios" class="py-20 bg-indigo-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <h3 class="text-3xl font-bold text-center mb-14 text-indigo-900">Servicios</h3>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="panel text-center">
+          <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
+            <!-- Ícono: documento con sello -->
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 3h6l4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="#4338ca" stroke-width="1.6"/>
+              <circle cx="12" cy="15" r="3" stroke="#4338ca" stroke-width="1.6"/>
+              <path d="M13 3v4h4" stroke="#4338ca" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <h4 class="font-semibold text-lg text-indigo-900 mb-2">Presentación de Reclamo</h4>
+          <p class="text-sm text-gray-600">Redactamos y presentamos tu demanda con fundamentos sólidos.</p>
+        </div>
+        <div class="panel text-center">
+          <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
+            <!-- Ícono: manos + escudo -->
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3l6 2v4c0 3.5-2.4 6.6-6 8-3.6-1.4-6-4.5-6-8V5l6-2z" stroke="#4338ca" stroke-width="1.6"/>
+              <path d="M4 14c2 0 2.5-1 4-1l2 2c1 1 3 1 4 0l2-2c1.5 0 2 .8 4 1" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4 class="font-semibold text-lg text-indigo-900 mb-2">Acompañamiento Legal</h4>
+          <p class="text-sm text-gray-600">Te guiamos durante todo el proceso, con claridad y seguimiento.</p>
+        </div>
+        <div class="panel text-center">
+          <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
+            <!-- Ícono: panel/actividad -->
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="14" rx="2" stroke="#4338ca" stroke-width="1.6"/>
+              <path d="M6 9l3 3 2-2 3 3 4-4" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h4 class="font-semibold text-lg text-indigo-900 mb-2">Seguimiento Personalizado</h4>
+          <p class="text-sm text-gray-600">Panel de cliente y comunicación directa con tu abogado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel Cliente -->
+  <section id="panelCliente" class="py-20 max-w-7xl mx-auto px-6 hidden">
+    <div class="flex items-center justify-between mb-10">
+      <h3 class="text-3xl font-bold text-indigo-900">Panel del Cliente</h3>
+      <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar sesión</button>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="panel md:col-span-1">
+        <h4 class="text-lg font-semibold text-indigo-900 mb-4">Resumen del caso</h4>
+        <dl class="text-sm text-slate-700 space-y-2">
+          <div class="flex justify-between"><dt>Código</dt><dd id="c-codigo" class="font-medium skeleton w-28 h-4 rounded"></dd></div>
+          <div class="flex justify-between"><dt>Entidad</dt><dd id="c-entidad" class="font-medium skeleton w-40 h-4 rounded"></dd></div>
+          <div class="flex justify-between"><dt>Monto reclamado</dt><dd id="c-monto" class="font-medium skeleton w-24 h-4 rounded"></dd></div>
+          <div class="flex justify-between"><dt>Estado</dt><dd id="c-estado" class="font-medium"><span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">—</span></dd></div>
+          <div class="flex justify-between"><dt>Último movimiento</dt><dd id="c-ultmov" class="font-medium skeleton w-28 h-4 rounded"></dd></div>
+        </dl>
+      </div>
+      <div class="panel md:col-span-2">
+        <h4 class="text-lg font-semibold text-indigo-900 mb-4">Línea de tiempo</h4>
+        <ol id="c-timeline" class="relative border-s border-slate-200 pl-6 space-y-6"><li class="skeleton h-6 rounded w-3/4"></li><li class="skeleton h-6 rounded w-2/3"></li></ol>
+      </div>
+    </div>
+    <div class="panel mt-8">
+      <h4 class="text-lg font-semibold text-indigo-900 mb-4">Mensajes</h4>
+      <div id="c-mensajes" class="space-y-4"></div>
+      <div class="mt-4 flex gap-3">
+        <input id="c-msg-input" type="text" placeholder="Escribí tu mensaje..." class="flex-1 input">
+        <button id="c-msg-send" class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel Abogado -->
+  <section id="panelAbogado" class="py-20 bg-indigo-50 hidden">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex items-center justify-between mb-10">
+        <h3 class="text-3xl font-bold text-indigo-900">Panel del Abogado</h3>
+        <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar sesión</button>
+      </div>
+      <div class="grid md:grid-cols-4 gap-6">
+        <div class="panel"><p class="text-sm text-slate-500">Casos activos</p><p id="kpi-activos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
+        <div class="panel"><p class="text-sm text-slate-500">Cautelares (90 días)</p><p id="kpi-cautelares" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
+        <div class="panel"><p class="text-sm text-slate-500">Éxitos (30 días)</p><p id="kpi-exitos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
+        <div class="panel"><p class="text-sm text-slate-500">SLAs en riesgo</p><p id="kpi-sla" class="text-3xl font-extrabold text-rose-600 mt-2">—</p></div>
+      </div>
+      <div class="panel mt-8 overflow-x-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="text-lg font-semibold text-indigo-900">Casos</h4>
+          <input id="searchCasos" type="text" class="input text-sm" placeholder="Buscar por cliente/entidad/código">
+        </div>
+        <table class="w-full text-sm">
+          <thead class="text-left text-slate-500">
+            <tr><th class="py-2 pr-4">Código</th><th class="py-2 pr-4">Cliente</th><th class="py-2 pr-4">Entidad</th><th class="py-2 pr-4">Estado</th><th class="py-2 pr-4">Venc.</th><th class="py-2">Acciones</th></tr>
+          </thead>
+          <tbody id="tablaCasos" class="align-top"></tbody>
+        </table>
+      </div>
+      <div class="panel mt-8">
+        <div class="flex items-center justify-between">
+          <h4 class="text-lg font-semibold text-indigo-900">Tareas y vencimientos</h4>
+          <button id="btnAddTarea" class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">+ Tarea</button>
+        </div>
+        <ul id="listaTareas" class="mt-4 space-y-2"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Reclamo (sin login) -->
+  <div id="modalReclamo" class="fixed inset-0 z-[60] hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="relative z-10 max-w-3xl mx-auto my-10 panel">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <defs><linearGradient id="plg3" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg3)"/>
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div>
+            <h5 class="text-xl font-bold text-indigo-900">Enviar Reclamo</h5>
+            <p class="text-sm text-slate-500">Completá los pasos. No necesitás registrarte.</p>
+          </div>
+        </div>
+        <button id="closeReclamo" class="text-slate-400 hover:text-slate-600 text-xl" aria-label="Cerrar">×</button>
+      </div>
+      <div class="mt-6">
+        <div class="flex items-center justify-between mb-2">
+          <p id="labelPaso" class="text-sm text-slate-600">Paso 1 de 3</p>
+          <div class="flex gap-2">
+            <div class="step-dot w-16 bg-indigo-600" id="sd1"></div>
+            <div class="step-dot w-16 bg-slate-200" id="sd2"></div>
+            <div class="step-dot w-16 bg-slate-200" id="sd3"></div>
+          </div>
+        </div>
+      </div>
+      <form id="formReclamo" class="mt-4 space-y-6">
+        <!-- Paso 1 -->
+        <div class="step" data-step="1">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div><label class="text-sm text-slate-600">Nombre completo</label><input name="nombre" required class="input"></div>
+            <div><label class="text-sm text-slate-600">DNI</label><input name="dni" required class="input"></div>
+            <div><label class="text-sm text-slate-600">Teléfono</label><input name="tel" required class="input"></div>
+            <div><label class="text-sm text-slate-600">Correo electrónico</label><input name="email" type="email" required class="input"></div>
+          </div>
+        </div>
+        <!-- Paso 2 -->
+        <div class="step hidden" data-step="2">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div><label class="text-sm text-slate-600">Entidad bancaria</label><input name="entidad" required class="input" placeholder="Banco..."></div>
+            <div><label class="text-sm text-slate-600">Fecha del incidente (opcional)</label><input name="fecha" type="date" class="input"></div>
+            <div class="md:col-span-2">
+              <label class="text-sm text-slate-600">Descripción del incidente</label>
+              <textarea name="descripcion" rows="4" required class="input" placeholder="Contanos qué ocurrió"></textarea>
+              <p class="text-xs text-slate-500 mt-1">No compartas contraseñas ni datos sensibles.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Paso 3 -->
+        <div class="step hidden" data-step="3">
+          <div><label class="text-sm text-slate-600">Adjuntar documentación (opcional)</label><input name="archivos" type="file" multiple class="input"></div>
+          <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" id="consent" required> Acepto el tratamiento de mis datos</label>
+        </div>
+        <div class="flex items-center justify-between pt-2">
+          <button type="button" id="btnPrev" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Anterior</button>
+          <button type="button" id="btnNext" class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Siguiente</button>
+          <button type="submit" id="btnSubmit" class="hidden px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar reclamo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Login -->
+  <div id="modalLogin" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="absolute inset-0 bg-black/45 backdrop-blur-sm"></div>
+    <div class="relative z-10 max-w-md w-[92%] mx-auto my-12 panel max-h-[80vh] overflow-auto focus:outline-none" tabindex="-1">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
+          <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <defs><linearGradient id="plg4" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg4)"/>
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h5 id="loginTitle" class="text-xl font-bold text-indigo-900">Iniciar sesión</h5>
+          <p class="text-sm text-slate-500">Accedé a tu panel para seguir el reclamo.</p>
+        </div>
+        <button id="closeLogin" class="ml-auto text-slate-400 hover:text-slate-600 text-xl icon-btn" aria-label="Cerrar">×</button>
+      </div>
+
+      <form id="formLogin" class="mt-4 space-y-4">
+        <div>
+          <label class="text-sm text-slate-600" for="loginEmail">Email</label>
+          <input id="loginEmail" name="email" type="email" required class="input" placeholder="tucorreo@dominio.com" autocomplete="username">
+        </div>
+        <div>
+          <label class="text-sm text-slate-600" for="loginPass">Contraseña</label>
+          <div class="relative">
+            <input id="loginPass" name="password" type="password" required class="input pr-12" placeholder="••••••••" autocomplete="current-password" aria-describedby="passHint">
+            <button type="button" id="togglePass" class="absolute right-2 top-1/2 -translate-y-1/2 icon-btn" aria-pressed="false" aria-label="Mostrar u ocultar contraseña">
+              <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" stroke="#475569" stroke-width="1.6"/>
+                <circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="1.6"/>
+              </svg>
+            </button>
+          </div>
+          <p id="passHint" class="sr-only">El botón alterna la visibilidad de la contraseña</p>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" id="remember"> <label for="remember">Recordarme</label>
+          </div>
+          <button id="btnLogin" class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 flex items-center gap-2">
+            <span id="loginSpinner" class="spinner hidden" aria-hidden="true"></span>
+            <span id="loginText">Entrar</span>
+          </button>
+        </div>
+        <p class="text-xs text-slate-500">¿Olvidaste tu contraseña? Escribinos para restablecerla.</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-indigo-900 text-white text-center py-10 mt-20">
+    <div class="flex items-center justify-center gap-2">
+      <svg width="18" height="18" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <defs><linearGradient id="plgSym" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
+        <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plgSym)"/>
+        <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="text-sm">&copy; 2025 Protección Legal. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Toasts -->
+  <div id="toast" class="toast hidden">
+    <div class="panel shadow-lg flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 6L9 17l-5-5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p id="toastText" class="text-sm text-slate-800">¡Bienvenido!</p>
+    </div>
+  </div>
+  <div id="toastError" class="toast-error hidden">
+    <div class="panel border border-rose-200 bg-rose-50/80 shadow-lg flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 8v4m0 4h.01M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <p id="toastErrorText" class="text-sm text-rose-700">Ocurrió un error.</p>
+    </div>
+  </div>
+
+  <script>
+    /* ================== CONFIG API ================== */
+    const API_BASE = 'http://localhost:4000'; // si tu backend está en otro host: 'https://api.tudominio.com'
+    const sessionKey = 'pl-session'; // { token, user:{name,email,role} }
+
+    function getSession(){ try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
+    function setSession(obj){ localStorage.setItem(sessionKey, JSON.stringify(obj)); }
+    function clearSession(){ localStorage.removeItem(sessionKey); }
+
+    function showToast(text){ const t=document.getElementById('toast'); document.getElementById('toastText').textContent=text; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3000); }
+    function showErrorToast(text){ const t=document.getElementById('toastError'); document.getElementById('toastErrorText').textContent=text||'Ocurrió un error'; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500); }
+
+    // fetch con timeout + header auth
+    async function apiFetch(path, { method='GET', headers={}, body, isForm=false, timeoutMs=120000 } = {}){
+      const controller = new AbortController();
+      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      const sess = getSession();
+      const authHeader = sess?.token ? { 'Authorization': 'Bearer ' + sess.token } : {};
+      const hdrs = isForm ? { ...authHeader, ...headers } : { 'Content-Type':'application/json', ...authHeader, ...headers };
+
+      try{
+        const res = await fetch(API_BASE + path, { method, headers: hdrs, body, signal: controller.signal, credentials: 'include' });
+        clearTimeout(id);
+        if (!res.ok){
+          // mensajes más legibles
+          let msg = `Error ${res.status}`;
+          try { const data = await res.json(); if (data?.message) msg = data.message; } catch{}
+          if (res.status === 401){ clearSession(); syncPanels(); showErrorToast('Sesión vencida. Volvé a iniciar sesión.'); }
+          throw new Error(msg);
+        }
+        const contentType = res.headers.get('content-type') || '';
+        return contentType.includes('application/json') ? res.json() : res.text();
+      } catch (err){
+        if (err.name === 'AbortError') throw new Error('La solicitud tardó demasiado. Intentá nuevamente.');
+        throw err;
+      }
+    }
+
+    /* ================== UI / NAV ================== */
+    const pc = document.getElementById('panelCliente');
+    const pa = document.getElementById('panelAbogado');
+    const btnLogout = document.getElementById('btnLogout');
+    const btnLogoutMobile = document.getElementById('btnLogoutMobile');
+    const greeting = document.getElementById('greeting');
+    const greetingMobile = document.getElementById('greetingMobile');
+
+    function logout(){ clearSession(); syncPanels(); document.getElementById('inicio').scrollIntoView({behavior:'smooth'}); }
+    btnLogout.addEventListener('click', logout);
+    btnLogoutMobile.addEventListener('click', logout);
+
+    async function syncPanels(){
+      const s = getSession();
+      pc.classList.add('hidden'); pa.classList.add('hidden');
+      btnLogout.classList.toggle('hidden', !s);
+      btnLogoutMobile.classList.toggle('hidden', !s);
+      greeting.classList.toggle('hidden', !s);
+      greetingMobile.classList.toggle('hidden', !s);
+      if (!s) return;
+
+      greeting.textContent = `Hola, ${s.user.name}`;
+      greetingMobile.textContent = `Hola, ${s.user.name}`;
+
+      if (s.user.role === 'cliente'){ await renderCliente(); pc.classList.remove('hidden'); pc.scrollIntoView({behavior:'smooth'}); }
+      else { await renderAbogado(); pa.classList.remove('hidden'); pa.scrollIntoView({behavior:'smooth'}); }
+    }
+
+    /* ================== Consulta simple ================== */
+    document.getElementById('formConsulta').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnEnviarConsulta');
+      btn.disabled = true; btn.textContent = 'Enviando...';
+      const fd = new FormData(e.target);
+      const payload = {
+        nombre: fd.get('nombre'),
+        email: (fd.get('email')||'').toString().trim(),
+        mensaje: fd.get('mensaje'),
+        consentimiento: document.getElementById('consulta-consent').checked
+      };
+      try{
+        await apiFetch('/consultas', { method:'POST', body: JSON.stringify(payload) });
+        showToast('¡Consulta enviada! Te responderemos pronto.');
+        e.target.reset();
+      } catch(err){ showErrorToast(err.message); }
+      finally { btn.disabled = false; btn.textContent = 'Enviar consulta'; }
+    });
+
+    /* ================== Modal genérico ================== */
+    function openModal(el){ el.classList.remove('hidden'); document.body.classList.add('modal-open'); }
+    function closeModal(el){ el.classList.add('hidden'); document.body.classList.remove('modal-open'); }
+
+    /* ================== Reclamo (sin login) ================== */
+    const modalReclamo = document.getElementById('modalReclamo');
+    const openReclamoBtn = document.getElementById('btnAbrirReclamo');
+    const closeReclamoBtn = document.getElementById('closeReclamo');
+    const navReclamo = document.getElementById('navReclamo');
+    openReclamoBtn.addEventListener('click', ()=> openModal(modalReclamo));
+    navReclamo.addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalReclamo); });
+    closeReclamoBtn.addEventListener('click', ()=> closeModal(modalReclamo));
+    modalReclamo.addEventListener('click', (e)=>{ if (e.target === modalReclamo) closeModal(modalReclamo); });
+
+    const steps = Array.from(document.querySelectorAll('#formReclamo .step'));
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const labelPaso = document.getElementById('labelPaso');
+    const dots = [document.getElementById('sd1'), document.getElementById('sd2'), document.getElementById('sd3')];
+    let step = 0;
+    function updateStepUI(){
+      steps.forEach((s,i)=> s.classList.toggle('hidden', i!==step));
+      btnPrev.classList.toggle('invisible', step===0);
+      btnNext.classList.toggle('hidden', step===steps.length-1);
+      btnSubmit.classList.toggle('hidden', step!==steps.length-1);
+      labelPaso.textContent = `Paso ${step+1} de 3`;
+      dots.forEach((d,i)=> d.className = 'step-dot w-16 ' + (i<=step ? 'bg-indigo-600' : 'bg-slate-200'));
+    }
+    btnPrev.addEventListener('click', ()=>{ if(step>0) step--; updateStepUI(); });
+    btnNext.addEventListener('click', ()=>{ if(step<steps.length-1) step++; updateStepUI(); });
+    updateStepUI();
+
+    document.getElementById('formReclamo').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const fd = new FormData(form); // incluye archivos si hay
+      // Mapear nombres de campos a tu backend si difiere
+      const payload = new FormData();
+      payload.append('nombre', fd.get('nombre'));
+      payload.append('dni', fd.get('dni'));
+      payload.append('telefono', fd.get('tel'));
+      payload.append('email', fd.get('email'));
+      payload.append('entidad', fd.get('entidad'));
+      if (fd.get('fecha')) payload.append('fechaIncidente', fd.get('fecha'));
+      payload.append('descripcion', fd.get('descripcion'));
+      const files = fd.getAll('archivos');
+      files.forEach(f => { if (f && f.name) payload.append('archivos', f); });
+
+      btnSubmit.disabled = true; btnSubmit.textContent = 'Enviando...';
+      try{
+        await apiFetch('/reclamos', { method:'POST', body: payload, isForm: true });
+        showToast('¡Reclamo enviado! Te contactaremos pronto.');
+        closeModal(modalReclamo);
+        form.reset(); step=0; updateStepUI();
+      } catch(err){ showErrorToast(err.message); }
+      finally { btnSubmit.disabled = false; btnSubmit.textContent = 'Enviar reclamo'; }
+    });
+
+    /* ================== Login (modal) ================== */
+    const modalLogin = document.getElementById('modalLogin');
+    const linkLogin = document.getElementById('linkLogin');
+    const ctaPanel = document.getElementById('ctaPanel');
+    const closeLogin = document.getElementById('closeLogin');
+    const loginCard = modalLogin.querySelector('.panel');
+    const togglePass = document.getElementById('togglePass');
+    const loginPass = document.getElementById('loginPass');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const btnLogin = document.getElementById('btnLogin');
+    const loginSpinner = document.getElementById('loginSpinner');
+    const loginText = document.getElementById('loginText');
+
+    let previousActive = null;
+    let focusTrapHandler = null;
+    function focusableElements(root){
+      return Array.from(root.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'))
+        .filter(el => el.offsetParent !== null || el.getAttribute('aria-hidden') !== 'true');
+    }
+    function trapFocus(modalRoot){
+      const list = focusableElements(modalRoot); if (!list.length) return;
+      const first = list[0], last = list[list.length-1];
+      focusTrapHandler = function(e){ if(e.key!=='Tab')return;
+        if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+        else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+      };
+      modalRoot.addEventListener('keydown', focusTrapHandler);
+    }
+    function releaseFocus(){ if (focusTrapHandler){ modalLogin.removeEventListener('keydown', focusTrapHandler); focusTrapHandler=null; } }
+    function openLogin(){ openModal(modalLogin); previousActive=document.activeElement; setTimeout(()=>{ trapFocus(modalLogin); loginCard.focus(); document.getElementById('loginEmail').focus(); },0); }
+    function closeLoginModal(){ releaseFocus(); closeModal(modalLogin); if(previousActive) previousActive.focus(); }
+
+    linkLogin.addEventListener('click', (e)=>{ e.preventDefault(); openLogin(); });
+    ctaPanel.addEventListener('click', (e)=>{ const s=getSession(); if(!s){ e.preventDefault(); openLogin(); } else { syncPanels(); } });
+    closeLogin.addEventListener('click', closeLoginModal);
+    modalLogin.addEventListener('click', (e)=>{ if (e.target===modalLogin) closeLoginModal(); });
+    document.addEventListener('keydown', (e)=>{ if(!modalLogin.classList.contains('hidden') && e.key==='Escape') closeLoginModal(); });
+
+    togglePass.addEventListener('click', ()=> {
+      const isText = loginPass.type === 'text';
+      loginPass.type = isText ? 'password' : 'text';
+      togglePass.setAttribute('aria-pressed', String(!isText));
+      eyeIcon.innerHTML = isText
+        ? '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" stroke="#475569" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="1.6"/>'
+        : '<path d="M3 3l18 18M2 12s3.5-6 10-6c2.3 0 4.2.6 5.8 1.5M21.9 10.8C22 11 22 12 22 12s-3.5 6-10 6c-2.4 0-4.4-.6-6-1.5" stroke="#475569" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="1.6"/>';
+    });
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btnLogin.disabled = true; loginSpinner.classList.remove('hidden'); loginText.textContent = 'Cargando...';
+      const fd = new FormData(e.target);
+      const payload = { email: (fd.get('email')||'').toString().trim().toLowerCase(), password: fd.get('password') };
+      try{
+        const data = await apiFetch('/login', { method:'POST', body: JSON.stringify(payload) });
+        if (!data?.accessToken || !data?.user) throw new Error('Respuesta de login inválida');
+        setSession({ token: data.accessToken, user: data.user });
+        e.target.reset(); closeLoginModal(); showToast(`¡Bienvenido/a, ${data.user.name}!`); syncPanels();
+      } catch(err){ showErrorToast(err.message); }
+      finally { btnLogin.disabled=false; loginSpinner.classList.add('hidden'); loginText.textContent='Entrar'; }
+    });
+
+    /* ================== Render Cliente ================== */
+    async function renderCliente(){
+      // obtener reclamos del usuario
+      let lista = [];
+      try{
+        lista = await apiFetch('/reclamos?mine=true');
+      } catch(err){ showErrorToast(err.message); return; }
+
+      // Tomamos el más reciente
+      const c = (lista||[]).sort((a,b)=> new Date(b.updatedAt||0)-new Date(a.updatedAt||0))[0];
+      if (!c){ document.getElementById('c-codigo').textContent='—';
+        document.getElementById('c-entidad').textContent='—';
+        document.getElementById('c-monto').textContent='—';
+        document.getElementById('c-estado').innerHTML='<span class="px-2 py-0.5 rounded bg-slate-100">Sin reclamos</span>';
+        document.getElementById('c-ultmov').textContent='—';
+        document.getElementById('c-timeline').innerHTML='<li class="text-slate-500">No hay actividad todavía.</li>';
+        document.getElementById('c-mensajes').innerHTML='<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>';
+        return;
+      }
+      document.getElementById('c-codigo').classList.remove('skeleton');
+      document.getElementById('c-entidad').classList.remove('skeleton');
+      document.getElementById('c-monto').classList.remove('skeleton');
+      document.getElementById('c-ultmov').classList.remove('skeleton');
+
+      document.getElementById('c-codigo').textContent = c.codigo || c.id;
+      document.getElementById('c-entidad').textContent = c.entidad || '—';
+      document.getElementById('c-monto').textContent = (c.monto!=null) ? new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(c.monto) : '—';
+      document.getElementById('c-estado').innerHTML = `<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${c.estado||'—'}</span>`;
+      document.getElementById('c-ultmov').textContent = (c.updatedAt||'').slice(0,10) || '—';
+
+      const tl = document.getElementById('c-timeline');
+      tl.innerHTML = '';
+      (c.timeline||[]).forEach(item=>{
+        const color = item.tipo==='ok'?'emerald': item.tipo==='warn'?'amber': item.tipo==='info'?'sky':'indigo';
+        const li = document.createElement('li');
+        li.className = 'relative';
+        li.innerHTML = `
+          <span class="absolute -left-[9px] top-0 w-4 h-4 bg-${color}-600 rounded-full ring-4 ring-white"></span>
+          <div class="ml-2">
+            <p class="text-sm text-slate-500">${item.fecha||''}</p>
+            <p class="font-medium text-slate-800">${item.hito||''}</p>
+          </div>`;
+        tl.appendChild(li);
+      });
+      if (!(c.timeline||[]).length){ tl.innerHTML = '<li class="text-slate-500">Sin eventos aún.</li>'; }
+
+      const box = document.getElementById('c-mensajes');
+      box.innerHTML = '';
+      (c.mensajes||[]).forEach(m=>{
+        const mine = (m.de||'').toLowerCase()==='cliente';
+        const wrap = document.createElement('div');
+        wrap.className = `flex ${mine?'justify-end':'justify-start'}`;
+        wrap.innerHTML = `
+          <div class="max-w-[70%] rounded-lg px-4 py-3 ${mine?'bg-indigo-600 text-white':'bg-white border'}">
+            <div class="text-xs ${mine?'text-indigo-100':'text-slate-500'} mb-1">${m.de||'—'} · ${(m.fecha||'').toString()}</div>
+            <div class="text-sm">${m.texto||''}</div>
+          </div>`;
+        box.appendChild(wrap);
+      });
+      if (!(c.mensajes||[]).length){ box.innerHTML = '<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>'; }
+
+      // envío simple de mensaje (si tu backend expone endpoint, reemplazar por POST /reclamos/:id/mensajes)
+      document.getElementById('c-msg-send').onclick = async ()=>{
+        const input = document.getElementById('c-msg-input');
+        const text = (input.value||'').trim();
+        if (!text) return;
+        try{
+          await apiFetch(`/reclamos/${c.id}/mensajes`, { method:'POST', body: JSON.stringify({ texto: text }), headers:{} });
+          input.value=''; await renderCliente();
+        }catch(err){ showErrorToast(err.message); }
+      };
+    }
+
+    /* ================== Render Abogado ================== */
+    async function renderAbogado(){
+      let casos = [];
+      try{
+        casos = await apiFetch('/reclamos?limit=100');
+      } catch(err){ showErrorToast(err.message); return; }
+
+      // KPIs muy básicos (ajustá reglas según tu lógica)
+      const activos = casos.filter(x=>['En trámite','Esperando entidad','Para firmar demanda'].includes(x.estado)).length;
+      const hoy = new Date();
+      const hace90 = new Date(hoy); hace90.setDate(hoy.getDate()-90);
+      const hace30 = new Date(hoy); hace30.setDate(hoy.getDate()-30);
+      const cautelares = casos.filter(x=> x.tipo==='Cautelar' && new Date(x.createdAt||0)>=hace90 ).length;
+      const exitos = casos.filter(x=> x.estado==='Cerrado con éxito' && new Date(x.updatedAt||0)>=hace30 ).length;
+      const slaRiesgo = casos.filter(x=> x.slaDue && new Date(x.slaDue) <= hoy ).length;
+
+      document.getElementById('kpi-activos').textContent = activos;
+      document.getElementById('kpi-cautelares').textContent = cautelares;
+      document.getElementById('kpi-exitos').textContent = exitos;
+      document.getElementById('kpi-sla').textContent = slaRiesgo;
+
+      const tbody = document.getElementById('tablaCasos');
+      tbody.innerHTML = '';
+      casos.forEach(c=>{
+        const tr=document.createElement('tr'); tr.className='border-t';
+        tr.innerHTML = `
+          <td class="py-3 pr-4 font-medium text-slate-800">${c.codigo||c.id}</td>
+          <td class="py-3 pr-4">${c.cliente?.nombre||c.clienteNombre||'—'}</td>
+          <td class="py-3 pr-4">${c.entidad||'—'}</td>
+          <td class="py-3 pr-4"><span class="px-2 py-0.5 rounded bg-slate-100">${c.estado||'—'}</span></td>
+          <td class="py-3 pr-4">${(c.slaDue||'').toString().slice(0,10)||'—'}</td>
+          <td class="py-3">
+            <button class="px-3 py-1 rounded border text-sm hover:bg-slate-100" data-view="${c.id}">Ver</button>
+            <button class="px-3 py-1 rounded bg-indigo-600 text-white text-sm hover:bg-indigo-700 ml-2" data-update="${c.id}">Actualizar</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+
+      // buscar en tabla (client-side)
+      document.getElementById('searchCasos').oninput = (e)=>{
+        const q = e.target.value.toLowerCase();
+        Array.from(tbody.rows).forEach(r=>{
+          const txt = r.innerText.toLowerCase();
+          r.style.display = txt.includes(q) ? '' : 'none';
+        });
+      };
+
+      // ejemplo de handlers (ajustar a tus endpoints)
+      tbody.addEventListener('click', async (e)=>{
+        const id = e.target.getAttribute('data-update') || e.target.getAttribute('data-view');
+        if (!id) return;
+        if (e.target.getAttribute('data-update')){
+          try{
+            await apiFetch(`/reclamos/${id}`, { method:'PATCH', body: JSON.stringify({ estado:'En trámite' }) });
+            showToast(`Caso ${id} actualizado`); renderAbogado();
+          }catch(err){ showErrorToast(err.message); }
+        } else {
+          // Ver detalle: podrías abrir un modal con GET /reclamos/:id
+          try{
+            const detalle = await apiFetch(`/reclamos/${id}`);
+            console.log('Detalle', detalle);
+            showToast(`Abrí consola para ver detalle ${id}`);
+          }catch(err){ showErrorToast(err.message); }
+        }
+      });
+
+      // Tareas demo (si tenés endpoint real, reemplazá esto)
+      const ul = document.getElementById('listaTareas');
+      ul.innerHTML = '';
+      casos.slice(0,5).forEach((c,i)=>{
+        const li=document.createElement('li');
+        li.className='flex items-center justify-between p-3 rounded border';
+        li.innerHTML = `
+          <div><p class="font-medium text-slate-800">Revisar documentación ${c.codigo||c.id}</p>
+          <p class="text-xs text-slate-500">Vence: ${(c.slaDue||'').toString().slice(0,10) || '—'}</p></div>
+          <div class="flex items-center gap-2">
+            <button class="px-3 py-1 rounded border text-sm hover:bg-slate-100">Editar</button>
+            <button class="px-3 py-1 rounded bg-emerald-600 text-white text-sm hover:bg-emerald-700">Hecho</button>
+          </div>`;
+        ul.appendChild(li);
+      });
+      document.getElementById('btnAddTarea').onclick = ()=> showToast('Implementar POST /tareas (placeholder)');
+    }
+
+    /* ================== Init ================== */
+    // CTA seguir mi reclamo: si hay sesión, va directo; sino abre login
+    document.getElementById('ctaPanel').addEventListener('click', (e)=>{ const s=getSession(); if(!s){ e.preventDefault(); openLogin(); } else { syncPanels(); } });
+
+    // abrir reclamo desde nav
+    document.getElementById('navReclamo').addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalReclamo); });
+
+    // primera sync
+    syncPanels();
+  </script>
+</body>
+</html>
