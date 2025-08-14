@@ -389,7 +389,7 @@
 
   <script>
     /* ================== CONFIG API ================== */
-    const API_BASE = 'http://localhost:4000'; // si tu backend está en otro host: 'https://api.tudominio.com'
+    const API_BASE = 'https://promueve-demanda.onrender.com'; // si tu backend está en otro host: 'https://api.tudominio.com'
     const sessionKey = 'pl-session'; // { token, user:{name,email,role} }
 
     function getSession(){ try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
