@@ -17,22 +17,46 @@ const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
-const origins = (process.env.CORS_ORIGIN || '').split(',').map(s => s.trim()).filter(Boolean);
 
 const app = express();
 
-// Middlewares
-app.use(helmet());
+// === CORS (UNA sola capa y antes de helmet y rutas) ===
+const ALLOWED_ORIGINS = [
+  'https://promueve-demanda.vercel.app',
+  // si usás previews de Vercel, podés permitir todo *.vercel.app con regex:
+  // o agregar explícitos: 'https://promueve-demanda-git-main-tuusuario.vercel.app',
+];
 
 const corsOptions = {
-  origin: origins.length ? origins : ['http://127.0.0.1:5500'],
-  credentials: true,
-  methods: ['GET','POST','PATCH','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization']
+  origin(origin, cb) {
+    // permite también herramientas sin origin (curl/Postman)
+    if (!origin) return cb(null, true);
+
+    // permitir exactos o *.vercel.app
+    const ok =
+      ALLOWED_ORIGINS.includes(origin) ||
+      /\.vercel\.app$/.test(new URL(origin).host); // opcional si querés previews
+
+    return cb(null, ok);
+  },
+  credentials: true, // si usás cookies/sesión
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // <- MUY importante para el preflight
+
+// Asegurar Vary para caches/proxies
+app.use((req, res, next) => {
+  res.setHeader('Vary', 'Origin');
+  next();
+});
+
+// === Helmet se aplica después de CORS ===
+app.use(helmet());
+
+// Resto de middlewares
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
