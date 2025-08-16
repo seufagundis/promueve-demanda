@@ -49,7 +49,6 @@
       <div class="md:hidden flex items-center gap-2">
         <span id="greetingMobile" class="hidden text-slate-600 text-sm">Hola, —</span>
         <button id="btnLogoutMobile" class="hidden px-3 py-2 rounded-lg border border-slate-300 text-sm">Salir</button>
-        <a href="#cambiar" id="linkChangePasswordMobile" class="hidden text-sm text-indigo-700">Cambiar contraseña</a>
       </div>
     </div>
   </header>
@@ -433,8 +432,6 @@
     const btnLogoutMobile = document.getElementById('btnLogoutMobile');
     const greeting = document.getElementById('greeting');
     const greetingMobile = document.getElementById('greetingMobile');
-      const linkChangePassword = document.getElementById('linkChangePassword');
-      const linkChangePasswordMobile = document.getElementById('linkChangePasswordMobile');
 
     function logout(){ clearSession(); syncPanels(); document.getElementById('inicio').scrollIntoView({behavior:'smooth'}); }
     btnLogout.addEventListener('click', logout);
