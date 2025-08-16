@@ -43,14 +43,12 @@
         <a href="#servicios" class="hover:text-indigo-700">Servicios</a>
         <a href="#" id="navReclamo" class="hover:text-indigo-700">Iniciar reclamo</a>
         <a href="#login" id="linkLogin" class="hover:text-indigo-700">Iniciar sesión</a>
-        <a href="#cambiar" id="linkChangePassword" class="hidden hover:text-indigo-700">Cambiar contraseña</a>
         <span id="greeting" class="hidden text-slate-600">Hola, —</span>
         <button id="btnLogout" class="hidden px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Cerrar sesión</button>
       </nav>
       <div class="md:hidden flex items-center gap-2">
         <span id="greetingMobile" class="hidden text-slate-600 text-sm">Hola, —</span>
         <button id="btnLogoutMobile" class="hidden px-3 py-2 rounded-lg border border-slate-300 text-sm">Salir</button>
-        <a href="#cambiar" id="linkChangePasswordMobile" class="hidden text-sm text-indigo-700">Cambiar contraseña</a>
       </div>
     </div>
   </header>
@@ -410,7 +408,7 @@
       const hdrs = isForm ? { ...authHeader, ...headers } : { 'Content-Type':'application/json', ...authHeader, ...headers };
 
       try{
-        const res = await fetch(API_BASE + path, { method, headers: hdrs, body, signal: controller.signal });
+        const res = await fetch(API_BASE + path, { method, headers: hdrs, body, signal: controller.signal, credentials: 'include' });
         clearTimeout(id);
         if (!res.ok){
           // mensajes más legibles
@@ -434,8 +432,6 @@
     const btnLogoutMobile = document.getElementById('btnLogoutMobile');
     const greeting = document.getElementById('greeting');
     const greetingMobile = document.getElementById('greetingMobile');
-      const linkChangePassword = document.getElementById('linkChangePassword');
-      const linkChangePasswordMobile = document.getElementById('linkChangePasswordMobile');
 
     function logout(){ clearSession(); syncPanels(); document.getElementById('inicio').scrollIntoView({behavior:'smooth'}); }
     btnLogout.addEventListener('click', logout);
@@ -510,26 +506,6 @@
     btnNext.addEventListener('click', ()=>{ if(step<steps.length-1) step++; updateStepUI(); });
     updateStepUI();
 
-    function validateRequired(scope){
-      const missing = [];
-      const fields = scope.querySelectorAll('[name][required]');
-      fields.forEach(el=>{
-        const val = (el.type==='checkbox') ? el.checked : (el.value||'').trim();
-        const ok = !!val;
-        el.classList.toggle('ring-2', !ok);
-        el.classList.toggle('ring-rose-500', !ok);
-        if(!ok){
-          const label = el.closest('div')?.querySelector('label')?.textContent || el.name;
-          missing.push(String(label||el.name).replace(/\*+/g,'').trim());
-        }
-      });
-      if (missing.length){ showErrorToast('Completá: ' + missing.join(', ')); const first = scope.querySelector('[name][required].ring-rose-500'); if(first) first.focus(); }
-      return missing.length===0;
-    }
-    document.getElementById('btnNext').addEventListener('click', () => {
-      const stepEl = document.querySelector('#formReclamo .step:not(.hidden)');
-      if (!validateRequired(stepEl)) return;
-    });
     document.getElementById('formReclamo').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
@@ -544,18 +520,12 @@
       if (fd.get('fecha')) payload.append('fechaIncidente', fd.get('fecha'));
       payload.append('descripcion', fd.get('descripcion'));
       const files = fd.getAll('archivos');
-      // validación de adjuntos (<=10MB y tipos permitidos)
-      for (const f of files){
-        if (!f || !f.name) continue;
-        if (f.size > 10*1024*1024){ showErrorToast(`El archivo "${f.name}" supera 10MB`); btnSubmit.disabled=false; btnSubmit.textContent='Enviar reclamo'; return; }
-        if (!/^(application\/pdf|image\/(png|jpe?g))$/.test(f.type||'')){ showErrorToast(`El archivo "${f.name}" no es PDF/JPG/PNG`); btnSubmit.disabled=false; btnSubmit.textContent='Enviar reclamo'; return; }
-      }
       files.forEach(f => { if (f && f.name) payload.append('archivos', f); });
 
       btnSubmit.disabled = true; btnSubmit.textContent = 'Enviando...';
       try{
-        const data = await apiFetch('/reclamos', { method:'POST', body: payload, isForm: true });
-        if (data?.accessToken && data?.user){ setSession({ token: data.accessToken, user: data.user }); showToast(data?.createdUser ? '¡Reclamo enviado! Creamos tu usuario automáticamente.' : '¡Reclamo enviado!'); } else { showToast('¡Reclamo enviado!'); }
+        await apiFetch('/reclamos', { method:'POST', body: payload, isForm: true });
+        showToast('¡Reclamo enviado! Te contactaremos pronto.');
         closeModal(modalReclamo);
         form.reset(); step=0; updateStepUI();
       } catch(err){ showErrorToast(err.message); }
@@ -599,28 +569,6 @@
     closeLogin.addEventListener('click', closeLoginModal);
     modalLogin.addEventListener('click', (e)=>{ if (e.target===modalLogin) closeLoginModal(); });
     document.addEventListener('keydown', (e)=>{ if(!modalLogin.classList.contains('hidden') && e.key==='Escape') closeLoginModal(); });
-
-    // === Cambiar contraseña ===
-    const modalPwd = document.getElementById('modalPwd');
-    const formPwd = document.getElementById('formPwd');
-    const btnPwdCancel = document.getElementById('btnPwdCancel');
-    document.getElementById('linkChangePassword').addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalPwd); });
-    document.getElementById('linkChangePasswordMobile').addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalPwd); });
-    btnPwdCancel.addEventListener('click', ()=> closeModal(modalPwd));
-    formPwd.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const currentPassword = document.getElementById('pwdCurrent').value.trim();
-      const newPassword = document.getElementById('pwdNew').value.trim();
-      const newPassword2 = document.getElementById('pwdNew2').value.trim();
-      if (!currentPassword || !newPassword || !newPassword2){ showErrorToast('Completá todos los campos.'); return; }
-      if (newPassword.length < 6){ showErrorToast('La nueva contraseña debe tener al menos 6 caracteres.'); return; }
-      if (newPassword !== newPassword2){ showErrorToast('Las contraseñas no coinciden.'); return; }
-      try{
-        const resp = await apiFetch('/me/password', { method:'PATCH', body: JSON.stringify({ currentPassword, newPassword }) });
-        if (resp?.ok){ showToast('Contraseña actualizada'); closeModal(modalPwd); formPwd.reset(); }
-        else { showErrorToast(resp?.message || 'No se pudo actualizar la contraseña'); }
-      } catch(err){ showErrorToast(err.message || 'Error al actualizar la contraseña'); }
-    });
 
     togglePass.addEventListener('click', ()=> {
       const isText = loginPass.type === 'text';
@@ -812,32 +760,5 @@
     // primera sync
     syncPanels();
   </script>
-
-  <!-- Modal Cambiar Contraseña -->
-  <div id="modalPwd" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-slate-900/60"></div>
-    <div class="relative mx-auto mt-24 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-      <h3 class="text-lg font-semibold text-slate-800">Cambiar contraseña</h3>
-      <form id="formPwd" class="mt-4 space-y-4">
-        <div>
-          <label class="text-sm text-slate-600">Contraseña actual</label>
-          <input id="pwdCurrent" name="currentPassword" type="password" required class="input">
-        </div>
-        <div>
-          <label class="text-sm text-slate-600">Nueva contraseña</label>
-          <input id="pwdNew" name="newPassword" type="password" required class="input">
-        </div>
-        <div>
-          <label class="text-sm text-slate-600">Repetir nueva contraseña</label>
-          <input id="pwdNew2" type="password" required class="input">
-        </div>
-        <div class="flex justify-end gap-3 pt-2">
-          <button type="button" id="btnPwdCancel" class="px-4 py-2 rounded-lg border border-slate-300">Cancelar</button>
-          <button type="submit" id="btnPwdSave" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
 </body>
 </html>

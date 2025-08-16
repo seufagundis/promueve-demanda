@@ -19,25 +19,29 @@ const PORT = process.env.PORT || 4000;
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
 const app = express();
-// Helper de errores unificados
-function resError(res, status, message, details){
-  return res.status(status).json({ ok:false, message, ...(details?{details}: {}) });
-}
 
 // === CORS (UNA sola capa y antes de helmet y rutas) ===
-const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '').split(',').map(s=>s.trim()).filter(Boolean);
+const ALLOWED_ORIGINS = [
+  'https://promueve-demanda.vercel.app',
+  // si usás previews de Vercel, podés permitir todo *.vercel.app con regex:
+  // o agregar explícitos: 'https://promueve-demanda-git-main-tuusuario.vercel.app',
+];
 
 const corsOptions = {
   origin(origin, cb) {
+    // permite también herramientas sin origin (curl/Postman)
     if (!origin) return cb(null, true);
-    const host = (()=>{ try{ return new URL(origin).host; }catch{ return ''; } })();
-    const ok = (ALLOWED_ORIGINS.length ? ALLOWED_ORIGINS.includes(origin) : false)
-              || /\.vercel\.app$/.test(host);
+
+    // permitir exactos o *.vercel.app
+    const ok =
+      ALLOWED_ORIGINS.includes(origin) ||
+      /\.vercel\.app$/.test(new URL(origin).host); // opcional si querés previews
+
     return cb(null, ok);
   },
-  credentials: true,
-  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true, // si usás cookies/sesión
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 204,
 };
 
@@ -76,15 +80,7 @@ const storage = multer.diskStorage({
     cb(null, `${uuid()}${ext}`);
   }
 });
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024, files: 10 },
-  fileFilter: (_req, file, cb) => {
-    const ok = /^(application\/pdf|image\/(png|jpe?g))$/.test(file.mimetype || '');
-    if (!ok) return cb(new Error('Tipo de archivo no permitido (solo PDF/JPG/PNG)'));
-    cb(null, true);
-  }
-});
+const upload = multer({ storage });
 
 // ====== “DB” en memoria (demo) ======
 const users = [
@@ -156,20 +152,20 @@ function sign(user) {
 function auth(req, res, next) {
   const hdr = req.headers.authorization || '';
   const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : null;
-  if (!token) return resError(res, 401, 'No autenticado');
+  if (!token) return res.status(401).json({ message: 'No autenticado' });
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload; // { sub, role, name, email }
     next();
   } catch {
-    return resError(res, 401, 'Token inválido o expirado');
+    return res.status(401).json({ message: 'Token inválido o expirado' });
   }
 }
 
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      return resError(res, 403, 'Sin permisos');
+      return res.status(403).json({ message: 'Sin permisos' });
     }
     next();
   };
@@ -183,9 +179,9 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 // Login
 app.post('/login', (req, res) => {
   const { email, password } = req.body || {};
-  if (!email || !password) return resError(res, 400, 'Email y contraseña requeridos');
+  if (!email || !password) return res.status(400).json({ message: 'Email y contraseña requeridos' });
   const user = users.find(u => u.email.toLowerCase() === String(email).toLowerCase());
-  if (!user || user.password !== password) return resError(res, 401, 'Credenciales inválidas');
+  if (!user || user.password !== password) return res.status(401).json({ message: 'Credenciales inválidas' });
 
   const accessToken = sign(user);
   return res.json({
@@ -198,7 +194,7 @@ app.post('/login', (req, res) => {
 app.post('/consultas', (req, res) => {
   const { nombre, email, mensaje, consentimiento } = req.body || {};
   if (!nombre || !email || !mensaje || !consentimiento) {
-    return resError(res, 400, 'Datos incompletos');
+    return res.status(400).json({ message: 'Datos incompletos' });
   }
   const id = uuid();
   consultas.push({ id, nombre, email, mensaje, consentimiento: !!consentimiento, createdAt: new Date().toISOString() });
@@ -209,7 +205,7 @@ app.post('/consultas', (req, res) => {
 app.post('/reclamos', upload.array('archivos'), (req, res) => {
   const { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion } = req.body || {};
   if (!nombre || !dni || !telefono || !email || !entidad || !descripcion) {
-    return resError(res, 400, 'Faltan campos obligatorios');
+    return res.status(400).json({ message: 'Faltan campos obligatorios' });
   }
   const id = uuid();
   const codigo = `PL-${dayjs().year()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(4, '0')}`;
@@ -256,39 +252,9 @@ app.post('/reclamos', upload.array('archivos'), (req, res) => {
   };
 
   reclamos.push(nuevo);
-  // Auto-registro básico: si el email no existe, lo creamos con contraseña temporal
-  let createdUser = false;
-  let tempPassword = null;
-  let u = users.find(u => u.email.toLowerCase() === String(ownerEmail).toLowerCase());
-  if (!u){
-    tempPassword = 'auto-' + String(Math.random()).slice(2,8);
-    u = { email: ownerEmail, password: tempPassword, role: 'cliente', name: nombre || ownerEmail };
-    users.push(u);
-    createdUser = true;
-  }
-  const accessToken = sign(u);
-  return res.status(201).json({
-    ok:true,
-    id: nuevo.id,
-    createdUser,
-    tempPassword: createdUser ? tempPassword : undefined,
-    accessToken,
-    user: { name: u.name, email: u.email, role: u.role }
-  });
+  return res.status(201).json({ id: nuevo.id });
 });
 
-
-// Cambiar contraseña
-app.patch('/me/password', auth, (req, res) => {
-  const { currentPassword, newPassword } = req.body || {};
-  if (!currentPassword || !newPassword) return resError(res, 400, 'Faltan campos');
-  if (String(newPassword).length < 6) return resError(res, 400, 'La nueva contraseña debe tener al menos 6 caracteres');
-  const user = users.find(u => u.email.toLowerCase() === req.user.email.toLowerCase());
-  if (!user) return resError(res, 404, 'Usuario no encontrado');
-  if (user.password !== currentPassword) return resError(res, 401, 'Contraseña actual incorrecta');
-  user.password = newPassword;
-  return res.json({ ok:true, message: 'Contraseña actualizada' });
-});
 // Listar reclamos (cliente/abogado)
 app.get('/reclamos', auth, (req, res) => {
   const { mine, limit } = req.query;
@@ -309,10 +275,10 @@ app.get('/reclamos', auth, (req, res) => {
 // Detalle reclamo
 app.get('/reclamos/:id', auth, (req, res) => {
   const r = reclamos.find(x => x.id === req.params.id);
-  if (!r) return resError(res, 404, 'No encontrado');
+  if (!r) return res.status(404).json({ message: 'No encontrado' });
 
   const soyDueño = r.cliente?.email?.toLowerCase() === req.user.email.toLowerCase();
-  if (!soyDueño && req.user.role !== 'abogado') return resError(res, 403, 'Sin permisos');
+  if (!soyDueño && req.user.role !== 'abogado') return res.status(403).json({ message: 'Sin permisos' });
 
   return res.json(r);
 });
@@ -320,7 +286,7 @@ app.get('/reclamos/:id', auth, (req, res) => {
 // Actualizar reclamo (abogado)
 app.patch('/reclamos/:id', auth, requireRole('abogado'), (req, res) => {
   const r = reclamos.find(x => x.id === req.params.id);
-  if (!r) return resError(res, 404, 'No encontrado');
+  if (!r) return res.status(404).json({ message: 'No encontrado' });
 
   const allowed = ['estado', 'monto', 'entidad', 'tipo', 'slaDue'];
   for (const k of allowed) {
@@ -341,13 +307,13 @@ app.patch('/reclamos/:id', auth, requireRole('abogado'), (req, res) => {
 // Mensajes en un reclamo (cliente o abogado)
 app.post('/reclamos/:id/mensajes', auth, (req, res) => {
   const r = reclamos.find(x => x.id === req.params.id);
-  if (!r) return resError(res, 404, 'No encontrado');
+  if (!r) return res.status(404).json({ message: 'No encontrado' });
 
   const soyDueño = r.cliente?.email?.toLowerCase() === req.user.email.toLowerCase();
-  if (!soyDueño && req.user.role !== 'abogado') return resError(res, 403, 'Sin permisos');
+  if (!soyDueño && req.user.role !== 'abogado') return res.status(403).json({ message: 'Sin permisos' });
 
   const { texto } = req.body || {};
-  if (!texto) return resError(res, 400, 'Texto requerido');
+  if (!texto) return res.status(400).json({ message: 'Texto requerido' });
 
   const de = req.user.role === 'abogado' ? 'Estudio' : 'Cliente';
   r.mensajes.push({ de, texto, fecha: dayjs().format('YYYY-MM-DD HH:mm') });
@@ -359,8 +325,10 @@ app.post('/reclamos/:id/mensajes', auth, (req, res) => {
 app.use((_req, res) => res.status(404).json({ message: 'Ruta no encontrada' }));
 
 // Error handler
-app.use((err, _req, res, _next) => { console.error(err); const msg = err?.message || 'Error interno'; res.status(400 <= (err.status||500) && (err.status||500) < 600 ? (err.status||500) : 500).json({ ok:false, message: msg }); });
-
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({ message: 'Error interno' });
+});
 
 // Start
 app.listen(PORT, () => {
