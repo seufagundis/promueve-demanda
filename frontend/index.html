@@ -406,6 +406,12 @@
     // const API_BASE = 'https://promueve-demanda.onrender.com'; // si tu backend está en otro host: 'https://api.tudominio.com'
     const sessionKey = 'pl-session'; // { token, user:{name,email,role} }
 
+    const token = localStorage.getItem('accessToken');
+fetch(`${API_BASE}/reclamos?mine=true`, {
+  headers: { Authorization: `Bearer ${token}` }
+});
+
+
     function getSession(){ try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
     function setSession(obj){ localStorage.setItem(sessionKey, JSON.stringify(obj)); }
     function clearSession(){ localStorage.removeItem(sessionKey); }
