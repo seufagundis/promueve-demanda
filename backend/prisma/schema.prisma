@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  cliente
+  abogado
+}
+
+enum TimelineTipo {
+  ok
+  warn
+  info
+}
+
+model AppUser {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("app_users")
+}
+
+model Consulta {
+  id             String   @id @default(uuid()) @db.Uuid
+  nombre         String
+  email          String
+  mensaje        String
+  consentimiento Boolean  @default(false)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@map("consultas")
+}
+
+model Reclamo {
+  id         String    @id @default(uuid()) @db.Uuid
+  codigo     String    @unique
+  ownerEmail String    @map("owner_email")
+  entidad    String
+  monto      Decimal?  @db.Decimal(14, 2)
+  estado     String    @default("En trámite")
+  tipo       String?
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  slaDue     DateTime? @map("sla_due") @db.Timestamptz(6)
+
+  timeline   ReclamoTimeline[]
+  mensajes   ReclamoMensaje[]
+  archivos   ReclamoArchivo[]
+
+  @@index([ownerEmail], map: "idx_reclamos_owner")
+  @@index([estado], map: "idx_reclamos_estado")
+  @@map("reclamos")
+}
+
+model ReclamoTimeline {
+  id         String       @id @default(uuid()) @db.Uuid
+  reclamoId  String       @map("reclamo_id") @db.Uuid   // <--- IMPORTANTE
+  fecha      DateTime     @db.Date
+  hito       String
+  tipo       TimelineTipo?
+
+  reclamo    Reclamo      @relation(fields: [reclamoId], references: [id], onDelete: Cascade)
+
+  @@map("reclamo_timeline")
+}
+
+model ReclamoMensaje {
+  id         String    @id @default(uuid()) @db.Uuid
+  reclamoId  String    @map("reclamo_id") @db.Uuid      // <--- IMPORTANTE
+  autor      String
+  texto      String
+  creadoEn   DateTime  @default(now()) @map("creado_en") @db.Timestamptz(6)
+
+  reclamo    Reclamo   @relation(fields: [reclamoId], references: [id], onDelete: Cascade)
+
+  @@map("reclamo_mensajes")
+}
+
+model ReclamoArchivo {
+  id           String   @id @default(uuid()) @db.Uuid
+  reclamoId    String   @map("reclamo_id") @db.Uuid     // <--- IMPORTANTE
+  filename     String
+  originalname String
+  mimetype     String
+  url          String
+  size         Int
+
+  reclamo      Reclamo  @relation(fields: [reclamoId], references: [id], onDelete: Cascade)
+
+  @@map("reclamo_archivos")
+}

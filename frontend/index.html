@@ -389,7 +389,21 @@
 
   <script>
     /* ================== CONFIG API ================== */
-    const API_BASE = 'https://promueve-demanda.onrender.com'; // si tu backend está en otro host: 'https://api.tudominio.com'
+    
+    
+  // Permite override con ?api=https://... para pruebas
+  const apiOverride = new URLSearchParams(location.search).get('api');
+
+  const API_BASE = apiOverride ||
+    (location.hostname.endsWith('vercel.app')
+      ? 'https://promueve-demanda.onrender.com'   // producción (demo)
+      : 'http://localhost:4000');                  // desarrollo local
+
+  // opcional: hacelo visible en consola
+  console.log('API_BASE =', API_BASE);
+
+
+    // const API_BASE = 'https://promueve-demanda.onrender.com'; // si tu backend está en otro host: 'https://api.tudominio.com'
     const sessionKey = 'pl-session'; // { token, user:{name,email,role} }
 
     function getSession(){ try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
