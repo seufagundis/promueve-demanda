@@ -1,29 +1,123 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Protección Legal - Reclamos Bancarios</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .fade-in { animation: fadeIn .9s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
-    .btn-cta { transition: transform .2s ease, box-shadow .2s ease; }
-    .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(0,0,0,.12); }
-    .panel { background: white; border-radius: 1rem; padding: 1.25rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-    .modal-open { overflow: hidden; }
-    .step-dot { height: 8px; border-radius: 9999px; }
-    .input { width:100%; border:1px solid rgb(226,232,240); border-radius:.75rem; padding:.7rem 1rem; outline: none;}
-    .input:focus { box-shadow: 0 0 0 3px rgba(79,70,229,.25); border-color: rgb(79,70,229);}
-    .icon-btn { display:inline-flex; align-items:center; justify-content:center; border:1px solid rgb(226,232,240); border-radius:.6rem; width:40px; height:40px; }
-    .toast { position: fixed; inset-inline-end: 1rem; inset-block-start: 1rem; z-index: 80; }
-    .toast-error { position: fixed; inset-inline-end: 1rem; inset-block-start: 4.5rem; z-index: 80; }
-    .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.6); border-top-color: white; border-radius: 9999px; animation: spin .7s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg);} }
-    .skeleton { background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
-    @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+    .fade-in {
+      animation: fadeIn .9s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn-cta {
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(0, 0, 0, .12);
+    }
+
+    .panel {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .modal-open {
+      overflow: hidden;
+    }
+
+    .step-dot {
+      height: 8px;
+      border-radius: 9999px;
+    }
+
+    .input {
+      width: 100%;
+      border: 1px solid rgb(226, 232, 240);
+      border-radius: .75rem;
+      padding: .7rem 1rem;
+      outline: none;
+    }
+
+    .input:focus {
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, .25);
+      border-color: rgb(79, 70, 229);
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgb(226, 232, 240);
+      border-radius: .6rem;
+      width: 40px;
+      height: 40px;
+    }
+
+    .toast {
+      position: fixed;
+      inset-inline-end: 1rem;
+      inset-block-start: 1rem;
+      z-index: 80;
+    }
+
+    .toast-error {
+      position: fixed;
+      inset-inline-end: 1rem;
+      inset-block-start: 4.5rem;
+      z-index: 80;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, .6);
+      border-top-color: white;
+      border-radius: 9999px;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.4s ease infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 100% 0
+      }
+
+      100% {
+        background-position: -100% 0
+      }
+    }
   </style>
 </head>
+
 <body class="bg-gray-50 text-gray-800 font-sans">
   <!-- Header -->
   <header class="fixed w-full z-50 bg-white/90 backdrop-blur shadow">
@@ -31,9 +125,14 @@
       <h1 class="text-2xl font-bold text-indigo-900 flex items-center gap-2">
         <!-- Logo -->
         <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-          <defs><linearGradient id="plg" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
-          <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg)"/>
-          <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="plg" x1="0" y1="0" x2="64" y2="64">
+              <stop offset="0" stop-color="#312e81" />
+              <stop offset="1" stop-color="#6d28d9" />
+            </linearGradient>
+          </defs>
+          <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg)" />
+          <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         <span>Protección Legal</span>
       </h1>
@@ -44,7 +143,8 @@
         <a href="#" id="navReclamo" class="hover:text-indigo-700">Iniciar reclamo</a>
         <a href="#login" id="linkLogin" class="hover:text-indigo-700">Iniciar sesión</a>
         <span id="greeting" class="hidden text-slate-600">Hola, —</span>
-        <button id="btnLogout" class="hidden px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Cerrar sesión</button>
+        <button id="btnLogout" class="hidden px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Cerrar
+          sesión</button>
       </nav>
       <div class="md:hidden flex items-center gap-2">
         <span id="greetingMobile" class="hidden text-slate-600 text-sm">Hola, —</span>
@@ -54,7 +154,8 @@
   </header>
 
   <!-- Hero con slogan + consulta -->
-  <section id="inicio" class="relative pt-28 pb-16 bg-center bg-cover" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80');">
+  <section id="inicio" class="relative pt-28 pb-16 bg-center bg-cover"
+    style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1600&q=80');">
     <div class="absolute inset-0 bg-gradient-to-b from-indigo-900/80 via-indigo-900/70 to-indigo-900/60"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
       <div class="text-white fade-in">
@@ -62,10 +163,15 @@
           <span class="text-xs uppercase tracking-wider">Defensa del consumidor financiero</span>
         </div>
         <h2 class="text-4xl md:text-5xl font-extrabold leading-tight">Cortá el fraude. Recuperá tu dinero.</h2>
-        <p class="mt-4 text-lg text-indigo-100">Asesoramiento legal claro y efectivo ante estafas bancarias y operaciones no autorizadas.</p>
+        <p class="mt-4 text-lg text-indigo-100">Asesoramiento legal claro y efectivo ante estafas bancarias y
+          operaciones no autorizadas.</p>
         <div class="mt-6 flex flex-wrap gap-3">
-          <button id="btnAbrirReclamo" class="btn-cta bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold px-6 py-3 rounded-lg">Iniciar reclamo (sin registro)</button>
-          <a id="ctaPanel" href="#login" class="btn-cta bg-white/90 hover:bg-white text-indigo-900 font-semibold px-6 py-3 rounded-lg">Seguir mi reclamo</a>
+          <button id="btnAbrirReclamo"
+            class="btn-cta bg-amber-400 hover:bg-amber-500 text-indigo-900 font-semibold px-6 py-3 rounded-lg">Iniciar
+            reclamo (sin registro)</button>
+          <a id="ctaPanel" href="#login"
+            class="btn-cta bg-white/90 hover:bg-white text-indigo-900 font-semibold px-6 py-3 rounded-lg">Seguir mi
+            reclamo</a>
         </div>
       </div>
 
@@ -73,9 +179,14 @@
       <div class="panel fade-in">
         <div class="flex items-center gap-3 mb-2">
           <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <defs><linearGradient id="plg2" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
-            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg2)"/>
-            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="plg2" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0" stop-color="#312e81" />
+                <stop offset="1" stop-color="#6d28d9" />
+              </linearGradient>
+            </defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg2)" />
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <h3 class="text-xl font-bold text-indigo-900">Hacé tu consulta</h3>
         </div>
@@ -92,13 +203,15 @@
           </div>
           <div>
             <label class="text-sm text-slate-600">Consulta</label>
-            <textarea name="mensaje" rows="4" required class="input" placeholder="Contanos brevemente tu consulta"></textarea>
+            <textarea name="mensaje" rows="4" required class="input"
+              placeholder="Contanos brevemente tu consulta"></textarea>
           </div>
           <div class="flex items-center justify-between">
             <label class="flex items-center gap-2 text-sm text-slate-600">
               <input id="consulta-consent" type="checkbox" required> Acepto el tratamiento de mis datos
             </label>
-            <button id="btnEnviarConsulta" class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar consulta</button>
+            <button id="btnEnviarConsulta"
+              class="px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar consulta</button>
           </div>
         </form>
         <p class="mt-3 text-xs text-slate-500">Respuesta inicial dentro de las próximas horas hábiles.</p>
@@ -111,17 +224,21 @@
     <h3 class="text-3xl font-bold text-center mb-14 text-indigo-900">Novedades</h3>
     <div class="grid md:grid-cols-3 gap-8">
       <article class="panel overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80"
+          class="w-full h-52 object-cover rounded-lg mb-4" alt="">
         <h4 class="font-semibold text-lg mb-2 text-indigo-900">Nuevo fallo protege a consumidores</h4>
-        <p class="text-sm text-gray-600">Los bancos deben asumir responsabilidad por compras con identidad suplantada.</p>
+        <p class="text-sm text-gray-600">Los bancos deben asumir responsabilidad por compras con identidad suplantada.
+        </p>
       </article>
       <article class="panel overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1581092334651-ddf4b1f1c3d0?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <img src="https://images.unsplash.com/photo-1581092334651-ddf4b1f1c3d0?auto=format&fit=crop&w=900&q=80"
+          class="w-full h-52 object-cover rounded-lg mb-4" alt="">
         <h4 class="font-semibold text-lg mb-2 text-indigo-900">Cómo protegerte de estafas</h4>
         <p class="text-sm text-gray-600">Cinco claves para evitar fraudes y operaciones no autorizadas.</p>
       </article>
       <article class="panel overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80" class="w-full h-52 object-cover rounded-lg mb-4" alt="">
+        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
+          class="w-full h-52 object-cover rounded-lg mb-4" alt="">
         <h4 class="font-semibold text-lg mb-2 text-indigo-900">Casos de éxito</h4>
         <p class="text-sm text-gray-600">Historias reales de clientes que recuperaron su dinero.</p>
       </article>
@@ -137,9 +254,10 @@
           <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
             <!-- Ícono: documento con sello -->
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M7 3h6l4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="#4338ca" stroke-width="1.6"/>
-              <circle cx="12" cy="15" r="3" stroke="#4338ca" stroke-width="1.6"/>
-              <path d="M13 3v4h4" stroke="#4338ca" stroke-width="1.6"/>
+              <path d="M7 3h6l4 4v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" stroke="#4338ca"
+                stroke-width="1.6" />
+              <circle cx="12" cy="15" r="3" stroke="#4338ca" stroke-width="1.6" />
+              <path d="M13 3v4h4" stroke="#4338ca" stroke-width="1.6" />
             </svg>
           </div>
           <h4 class="font-semibold text-lg text-indigo-900 mb-2">Presentación de Reclamo</h4>
@@ -149,8 +267,9 @@
           <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
             <!-- Ícono: manos + escudo -->
             <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 3l6 2v4c0 3.5-2.4 6.6-6 8-3.6-1.4-6-4.5-6-8V5l6-2z" stroke="#4338ca" stroke-width="1.6"/>
-              <path d="M4 14c2 0 2.5-1 4-1l2 2c1 1 3 1 4 0l2-2c1.5 0 2 .8 4 1" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M12 3l6 2v4c0 3.5-2.4 6.6-6 8-3.6-1.4-6-4.5-6-8V5l6-2z" stroke="#4338ca" stroke-width="1.6" />
+              <path d="M4 14c2 0 2.5-1 4-1l2 2c1 1 3 1 4 0l2-2c1.5 0 2 .8 4 1" stroke="#4338ca" stroke-width="1.6"
+                stroke-linecap="round" />
             </svg>
           </div>
           <h4 class="font-semibold text-lg text-indigo-900 mb-2">Acompañamiento Legal</h4>
@@ -160,8 +279,8 @@
           <div class="mx-auto mb-4 w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center">
             <!-- Ícono: panel/actividad -->
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="14" rx="2" stroke="#4338ca" stroke-width="1.6"/>
-              <path d="M6 9l3 3 2-2 3 3 4-4" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round"/>
+              <rect x="3" y="4" width="18" height="14" rx="2" stroke="#4338ca" stroke-width="1.6" />
+              <path d="M6 9l3 3 2-2 3 3 4-4" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round" />
             </svg>
           </div>
           <h4 class="font-semibold text-lg text-indigo-900 mb-2">Seguimiento Personalizado</h4>
@@ -175,31 +294,84 @@
   <section id="panelCliente" class="py-20 max-w-7xl mx-auto px-6 hidden">
     <div class="flex items-center justify-between mb-10">
       <h3 class="text-3xl font-bold text-indigo-900">Panel del Cliente</h3>
-      <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar sesión</button>
+      <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar
+        sesión</button>
     </div>
     <div class="grid md:grid-cols-3 gap-8">
       <div class="panel md:col-span-1">
         <h4 class="text-lg font-semibold text-indigo-900 mb-4">Resumen del caso</h4>
         <dl class="text-sm text-slate-700 space-y-2">
-          <div class="flex justify-between"><dt>Código</dt><dd id="c-codigo" class="font-medium skeleton w-28 h-4 rounded"></dd></div>
-          <div class="flex justify-between"><dt>Entidad</dt><dd id="c-entidad" class="font-medium skeleton w-40 h-4 rounded"></dd></div>
-          <div class="flex justify-between"><dt>Monto reclamado</dt><dd id="c-monto" class="font-medium skeleton w-24 h-4 rounded"></dd></div>
-          <div class="flex justify-between"><dt>Estado</dt><dd id="c-estado" class="font-medium"><span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">—</span></dd></div>
-          <div class="flex justify-between"><dt>Último movimiento</dt><dd id="c-ultmov" class="font-medium skeleton w-28 h-4 rounded"></dd></div>
+          <div class="flex justify-between">
+            <dt>Código</dt>
+            <dd id="c-codigo" class="font-medium skeleton w-28 h-4 rounded"></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Entidad</dt>
+            <dd id="c-entidad" class="font-medium skeleton w-40 h-4 rounded"></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Monto reclamado</dt>
+            <dd id="c-monto" class="font-medium skeleton w-24 h-4 rounded"></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Estado</dt>
+            <dd id="c-estado" class="font-medium"><span
+                class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">—</span></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt>Último movimiento</dt>
+            <dd id="c-ultmov" class="font-medium skeleton w-28 h-4 rounded"></dd>
+          </div>
         </dl>
       </div>
       <div class="panel md:col-span-2">
         <h4 class="text-lg font-semibold text-indigo-900 mb-4">Línea de tiempo</h4>
-        <ol id="c-timeline" class="relative border-s border-slate-200 pl-6 space-y-6"><li class="skeleton h-6 rounded w-3/4"></li><li class="skeleton h-6 rounded w-2/3"></li></ol>
+        <ol id="c-timeline" class="relative border-s border-slate-200 pl-6 space-y-6">
+          <li class="skeleton h-6 rounded w-3/4"></li>
+          <li class="skeleton h-6 rounded w-2/3"></li>
+        </ol>
       </div>
     </div>
+
+    <div class="panel mt-8">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="text-lg font-semibold text-indigo-900">Mis reclamos</h4>
+        <input id="c-buscar" type="text" class="input text-sm w-64" placeholder="Buscar por código/entidad">
+      </div>
+      <table class="w-full text-sm">
+        <thead class="text-left text-slate-500">
+          <tr>
+            <th class="py-2 pr-4">Código</th>
+            <th class="py-2 pr-4">Entidad</th>
+            <th class="py-2 pr-4">Estado</th>
+            <th class="py-2 pr-4">Últ. mov.</th>
+            <th class="py-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="c-tabla" class="align-top"></tbody>
+      </table>
+    </div>
+
     <div class="panel mt-8">
       <h4 class="text-lg font-semibold text-indigo-900 mb-4">Mensajes</h4>
       <div id="c-mensajes" class="space-y-4"></div>
       <div class="mt-4 flex gap-3">
         <input id="c-msg-input" type="text" placeholder="Escribí tu mensaje..." class="flex-1 input">
-        <button id="c-msg-send" class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar</button>
+        <button id="c-msg-send"
+          class="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar</button>
       </div>
+    </div>
+
+    <!-- Documentación -->
+    <div class="panel mt-8" id="panelDocsCliente">
+      <h4 class="text-lg font-semibold text-indigo-900 mb-4">Documentación</h4>
+      <ul id="c-archivos" class="space-y-2 mb-4"></ul>
+      <div class="flex items-center gap-3">
+        <input id="c-file" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" class="input">
+        <button id="c-file-send"
+          class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Adjuntar</button>
+      </div>
+      <p class="text-xs text-slate-500 mt-2">Formatos permitidos: PDF, JPG, PNG. Máx. 10MB cada archivo.</p>
     </div>
   </section>
 
@@ -208,13 +380,26 @@
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex items-center justify-between mb-10">
         <h3 class="text-3xl font-bold text-indigo-900">Panel del Abogado</h3>
-        <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar sesión</button>
+        <button class="px-3 py-2 rounded-lg border border-slate-300 hover:bg-slate-100" onclick="logout()">Cerrar
+          sesión</button>
       </div>
       <div class="grid md:grid-cols-4 gap-6">
-        <div class="panel"><p class="text-sm text-slate-500">Casos activos</p><p id="kpi-activos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
-        <div class="panel"><p class="text-sm text-slate-500">Cautelares (90 días)</p><p id="kpi-cautelares" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
-        <div class="panel"><p class="text-sm text-slate-500">Éxitos (30 días)</p><p id="kpi-exitos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p></div>
-        <div class="panel"><p class="text-sm text-slate-500">SLAs en riesgo</p><p id="kpi-sla" class="text-3xl font-extrabold text-rose-600 mt-2">—</p></div>
+        <div class="panel">
+          <p class="text-sm text-slate-500">Casos activos</p>
+          <p id="kpi-activos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p>
+        </div>
+        <div class="panel">
+          <p class="text-sm text-slate-500">Cautelares (90 días)</p>
+          <p id="kpi-cautelares" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p>
+        </div>
+        <div class="panel">
+          <p class="text-sm text-slate-500">Éxitos (30 días)</p>
+          <p id="kpi-exitos" class="text-3xl font-extrabold text-indigo-900 mt-2">—</p>
+        </div>
+        <div class="panel">
+          <p class="text-sm text-slate-500">SLAs en riesgo</p>
+          <p id="kpi-sla" class="text-3xl font-extrabold text-rose-600 mt-2">—</p>
+        </div>
       </div>
       <div class="panel mt-8 overflow-x-auto">
         <div class="flex items-center justify-between mb-4">
@@ -223,7 +408,14 @@
         </div>
         <table class="w-full text-sm">
           <thead class="text-left text-slate-500">
-            <tr><th class="py-2 pr-4">Código</th><th class="py-2 pr-4">Cliente</th><th class="py-2 pr-4">Entidad</th><th class="py-2 pr-4">Estado</th><th class="py-2 pr-4">Venc.</th><th class="py-2">Acciones</th></tr>
+            <tr>
+              <th class="py-2 pr-4">Código</th>
+              <th class="py-2 pr-4">Cliente</th>
+              <th class="py-2 pr-4">Entidad</th>
+              <th class="py-2 pr-4">Estado</th>
+              <th class="py-2 pr-4">Venc.</th>
+              <th class="py-2">Acciones</th>
+            </tr>
           </thead>
           <tbody id="tablaCasos" class="align-top"></tbody>
         </table>
@@ -231,7 +423,8 @@
       <div class="panel mt-8">
         <div class="flex items-center justify-between">
           <h4 class="text-lg font-semibold text-indigo-900">Tareas y vencimientos</h4>
-          <button id="btnAddTarea" class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">+ Tarea</button>
+          <button id="btnAddTarea" class="px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm hover:bg-indigo-700">+
+            Tarea</button>
         </div>
         <ul id="listaTareas" class="mt-4 space-y-2"></ul>
       </div>
@@ -245,9 +438,14 @@
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-3">
           <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <defs><linearGradient id="plg3" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
-            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg3)"/>
-            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="plg3" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0" stop-color="#312e81" />
+                <stop offset="1" stop-color="#6d28d9" />
+              </linearGradient>
+            </defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg3)" />
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <div>
             <h5 class="text-xl font-bold text-indigo-900">Enviar Reclamo</h5>
@@ -270,33 +468,43 @@
         <!-- Paso 1 -->
         <div class="step" data-step="1">
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="text-sm text-slate-600">Nombre completo</label><input name="nombre" required class="input"></div>
+            <div><label class="text-sm text-slate-600">Nombre completo</label><input name="nombre" required
+                class="input"></div>
             <div><label class="text-sm text-slate-600">DNI</label><input name="dni" required class="input"></div>
             <div><label class="text-sm text-slate-600">Teléfono</label><input name="tel" required class="input"></div>
-            <div><label class="text-sm text-slate-600">Correo electrónico</label><input name="email" type="email" required class="input"></div>
+            <div><label class="text-sm text-slate-600">Correo electrónico</label><input name="email" type="email"
+                required class="input"></div>
           </div>
         </div>
         <!-- Paso 2 -->
         <div class="step hidden" data-step="2">
           <div class="grid md:grid-cols-2 gap-4">
-            <div><label class="text-sm text-slate-600">Entidad bancaria</label><input name="entidad" required class="input" placeholder="Banco..."></div>
-            <div><label class="text-sm text-slate-600">Fecha del incidente (opcional)</label><input name="fecha" type="date" class="input"></div>
+            <div><label class="text-sm text-slate-600">Entidad bancaria</label><input name="entidad" required
+                class="input" placeholder="Banco..."></div>
+            <div><label class="text-sm text-slate-600">Fecha del incidente (opcional)</label><input name="fecha"
+                type="date" class="input"></div>
             <div class="md:col-span-2">
               <label class="text-sm text-slate-600">Descripción del incidente</label>
-              <textarea name="descripcion" rows="4" required class="input" placeholder="Contanos qué ocurrió"></textarea>
+              <textarea name="descripcion" rows="4" required class="input"
+                placeholder="Contanos qué ocurrió"></textarea>
               <p class="text-xs text-slate-500 mt-1">No compartas contraseñas ni datos sensibles.</p>
             </div>
           </div>
         </div>
         <!-- Paso 3 -->
         <div class="step hidden" data-step="3">
-          <div><label class="text-sm text-slate-600">Adjuntar documentación (opcional)</label><input name="archivos" type="file" multiple class="input"></div>
-          <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" id="consent" required> Acepto el tratamiento de mis datos</label>
+          <div><label class="text-sm text-slate-600">Adjuntar documentación (opcional)</label><input name="archivos"
+              type="file" multiple accept=".pdf,.jpg,.jpeg,.png" class="input"></div>
+          <label class="flex items-center gap-2 text-sm text-slate-600"><input type="checkbox" id="consent" required>
+            Acepto el tratamiento de mis datos</label>
         </div>
         <div class="flex items-center justify-between pt-2">
-          <button type="button" id="btnPrev" class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Anterior</button>
-          <button type="button" id="btnNext" class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Siguiente</button>
-          <button type="submit" id="btnSubmit" class="hidden px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar reclamo</button>
+          <button type="button" id="btnPrev"
+            class="px-5 py-2 rounded-lg border border-slate-300 hover:bg-slate-100">Anterior</button>
+          <button type="button" id="btnNext"
+            class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Siguiente</button>
+          <button type="submit" id="btnSubmit"
+            class="hidden px-5 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">Enviar reclamo</button>
         </div>
       </form>
     </div>
@@ -305,35 +513,45 @@
   <!-- Modal Login -->
   <div id="modalLogin" class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
     <div class="absolute inset-0 bg-black/45 backdrop-blur-sm"></div>
-    <div class="relative z-10 max-w-md w-[92%] mx-auto my-12 panel max-h-[80vh] overflow-auto focus:outline-none" tabindex="-1">
+    <div class="relative z-10 max-w-md w-[92%] mx-auto my-12 panel max-h-[80vh] overflow-auto focus:outline-none"
+      tabindex="-1">
       <div class="flex items-center gap-3 mb-1">
         <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
           <svg width="28" height="28" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <defs><linearGradient id="plg4" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
-            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg4)"/>
-            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="plg4" x1="0" y1="0" x2="64" y2="64">
+                <stop offset="0" stop-color="#312e81" />
+                <stop offset="1" stop-color="#6d28d9" />
+              </linearGradient>
+            </defs>
+            <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plg4)" />
+            <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </div>
         <div>
           <h5 id="loginTitle" class="text-xl font-bold text-indigo-900">Iniciar sesión</h5>
           <p class="text-sm text-slate-500">Accedé a tu panel para seguir el reclamo.</p>
         </div>
-        <button id="closeLogin" class="ml-auto text-slate-400 hover:text-slate-600 text-xl icon-btn" aria-label="Cerrar">×</button>
+        <button id="closeLogin" class="ml-auto text-slate-400 hover:text-slate-600 text-xl icon-btn"
+          aria-label="Cerrar">×</button>
       </div>
 
       <form id="formLogin" class="mt-4 space-y-4">
         <div>
           <label class="text-sm text-slate-600" for="loginEmail">Email</label>
-          <input id="loginEmail" name="email" type="email" required class="input" placeholder="tucorreo@dominio.com" autocomplete="username">
+          <input id="loginEmail" name="email" type="email" required class="input" placeholder="tucorreo@dominio.com"
+            autocomplete="username">
         </div>
         <div>
           <label class="text-sm text-slate-600" for="loginPass">Contraseña</label>
           <div class="relative">
-            <input id="loginPass" name="password" type="password" required class="input pr-12" placeholder="••••••••" autocomplete="current-password" aria-describedby="passHint">
-            <button type="button" id="togglePass" class="absolute right-2 top-1/2 -translate-y-1/2 icon-btn" aria-pressed="false" aria-label="Mostrar u ocultar contraseña">
+            <input id="loginPass" name="password" type="password" required class="input pr-12" placeholder="••••••••"
+              autocomplete="current-password" aria-describedby="passHint">
+            <button type="button" id="togglePass" class="absolute right-2 top-1/2 -translate-y-1/2 icon-btn"
+              aria-pressed="false" aria-label="Mostrar u ocultar contraseña">
               <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" stroke="#475569" stroke-width="1.6"/>
-                <circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="1.6"/>
+                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" stroke="#475569" stroke-width="1.6" />
+                <circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="1.6" />
               </svg>
             </button>
           </div>
@@ -343,7 +561,8 @@
           <div class="flex items-center gap-2 text-sm text-slate-600">
             <input type="checkbox" id="remember"> <label for="remember">Recordarme</label>
           </div>
-          <button id="btnLogin" class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 flex items-center gap-2">
+          <button id="btnLogin"
+            class="px-5 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 flex items-center gap-2">
             <span id="loginSpinner" class="spinner hidden" aria-hidden="true"></span>
             <span id="loginText">Entrar</span>
           </button>
@@ -357,9 +576,14 @@
   <footer class="bg-indigo-900 text-white text-center py-10 mt-20">
     <div class="flex items-center justify-center gap-2">
       <svg width="18" height="18" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <defs><linearGradient id="plgSym" x1="0" y1="0" x2="64" y2="64"><stop offset="0" stop-color="#312e81"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>
-        <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plgSym)"/>
-        <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="plgSym" x1="0" y1="0" x2="64" y2="64">
+            <stop offset="0" stop-color="#312e81" />
+            <stop offset="1" stop-color="#6d28d9" />
+          </linearGradient>
+        </defs>
+        <path d="M32 4l22 8v16c0 14-9.5 26.6-22 32C19.5 54.6 10 42 10 28V12l22-8z" fill="url(#plgSym)" />
+        <path d="M22 31l7 7 13-13" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
       <p class="text-sm">&copy; 2025 Protección Legal. Todos los derechos reservados.</p>
     </div>
@@ -370,7 +594,7 @@
     <div class="panel shadow-lg flex items-center gap-3">
       <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M20 6L9 17l-5-5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 6L9 17l-5-5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
       <p id="toastText" class="text-sm text-slate-800">¡Bienvenido!</p>
@@ -380,66 +604,145 @@
     <div class="panel border border-rose-200 bg-rose-50/80 shadow-lg flex items-center gap-3">
       <div class="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 8v4m0 4h.01M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8v4m0 4h.01M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z" stroke="#e11d48" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
       <p id="toastErrorText" class="text-sm text-rose-700">Ocurrió un error.</p>
     </div>
   </div>
 
+
+  <!-- Modal actualizar reclamo (abogado) -->
+  <div id="modalUpdate" class="fixed inset-0 z-[80] hidden">
+    <div class="absolute inset-0 bg-black/45 backdrop-blur-sm"></div>
+    <div class="relative z-10 max-w-lg w-[92%] mx-auto my-12 panel">
+      <div class="flex items-center justify-between mb-2">
+        <h5 class="text-xl font-bold text-indigo-900">Actualizar reclamo</h5>
+        <button id="updClose" class="text-slate-400 hover:text-slate-600 text-xl">×</button>
+      </div>
+      <form id="formUpdate" class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-slate-600">Estado</label>
+            <select id="updEstado" class="input">
+              <option value="">(sin cambios)</option>
+              <option>Recibido</option>
+              <option>En trámite</option>
+              <option>Esperando entidad</option>
+              <option>Para firmar demanda</option>
+              <option>Cerrado con éxito</option>
+              <option>Cerrado</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Monto (opcional)</label>
+            <input id="updMonto" type="number" class="input" placeholder="Ej: 1500000">
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-slate-600">Hito (opcional)</label>
+            <input id="updHito" class="input" placeholder="Ej: Se envió CD a banco">
+          </div>
+          <div>
+            <label class="text-sm text-slate-600">Tipo de hito</label>
+            <select id="updTipo" class="input">
+              <option value="">info</option>
+              <option value="ok">ok</option>
+              <option value="warn">warn</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-600">Mensaje al cliente (opcional)</label>
+          <textarea id="updMsg" rows="3" class="input" placeholder="Texto visible para el cliente"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" id="updCancel" class="px-4 py-2 rounded-lg border">Cancelar</button>
+          <button id="updSave"
+            class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     /* ================== CONFIG API ================== */
-    
-    
-  // Permite override con ?api=https://... para pruebas
-  const apiOverride = new URLSearchParams(location.search).get('api');
 
-  const API_BASE = apiOverride ||
-    (location.hostname.endsWith('vercel.app')
-      ? 'https://promueve-demanda.onrender.com'   // producción (demo)
-      : 'http://localhost:4000');                  // desarrollo local
 
-  // opcional: hacelo visible en consola
-  console.log('API_BASE =', API_BASE);
+    // Permite override con ?api=https://... para pruebas
+    const apiOverride = new URLSearchParams(location.search).get('api');
+
+    const API_BASE = apiOverride ||
+      (location.hostname.endsWith('vercel.app')
+        ? 'https://promueve-demanda.onrender.com'   // producción (demo)
+        : 'http://localhost:4000');                  // desarrollo local
+
+    // opcional: hacelo visible en consola
+    console.log('API_BASE =', API_BASE);
 
 
     // const API_BASE = 'https://promueve-demanda.onrender.com'; // si tu backend está en otro host: 'https://api.tudominio.com'
     const sessionKey = 'pl-session'; // { token, user:{name,email,role} }
 
-    const token = localStorage.getItem('accessToken');
-fetch(`${API_BASE}/reclamos?mine=true`, {
-  headers: { Authorization: `Bearer ${token}` }
-});
+    //     const token = localStorage.getItem('accessToken');
+    // fetch(`${API_BASE}/reclamos?mine=true`, {
+    //   headers: { Authorization: `Bearer ${token}` }
+    // });
+    /* ===== Modal actualizar reclamo (abogado) - único ===== */
+    let updateId = null;
+    const modalUpdateEl = document.getElementById('modalUpdate');
+
+    function openUpdate(id) {
+      updateId = id;
+      modalUpdateEl.classList.remove('hidden');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeUpdate() {
+      modalUpdateEl.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+      updateId = null;
+      document.getElementById('formUpdate').reset();
+    }
+
+    document.getElementById('updClose').onclick = closeUpdate;
+    document.getElementById('updCancel').onclick = closeUpdate;
 
 
-    function getSession(){ try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
-    function setSession(obj){ localStorage.setItem(sessionKey, JSON.stringify(obj)); }
-    function clearSession(){ localStorage.removeItem(sessionKey); }
 
-    function showToast(text){ const t=document.getElementById('toast'); document.getElementById('toastText').textContent=text; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3000); }
-    function showErrorToast(text){ const t=document.getElementById('toastError'); document.getElementById('toastErrorText').textContent=text||'Ocurrió un error'; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),3500); }
+    function getSession() { try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; } }
+    function setSession(obj) { localStorage.setItem(sessionKey, JSON.stringify(obj)); }
+    function clearSession() { localStorage.removeItem(sessionKey); }
+
+    function showToast(text) { const t = document.getElementById('toast'); document.getElementById('toastText').textContent = text; t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 3000); }
+    function showErrorToast(text) { const t = document.getElementById('toastError'); document.getElementById('toastErrorText').textContent = text || 'Ocurrió un error'; t.classList.remove('hidden'); setTimeout(() => t.classList.add('hidden'), 3500); }
 
     // fetch con timeout + header auth
-    async function apiFetch(path, { method='GET', headers={}, body, isForm=false, timeoutMs=120000 } = {}){
+    async function apiFetch(path, { method = 'GET', headers = {}, body, isForm = false, timeoutMs = 120000 } = {}) {
       const controller = new AbortController();
-      const id = setTimeout(()=>controller.abort(), timeoutMs);
+      const id = setTimeout(() => controller.abort(), timeoutMs);
       const sess = getSession();
       const authHeader = sess?.token ? { 'Authorization': 'Bearer ' + sess.token } : {};
-      const hdrs = isForm ? { ...authHeader, ...headers } : { 'Content-Type':'application/json', ...authHeader, ...headers };
+      const hdrs = isForm ? { ...authHeader, ...headers } : { 'Content-Type': 'application/json', ...authHeader, ...headers };
 
-      try{
+      try {
         const res = await fetch(API_BASE + path, { method, headers: hdrs, body, signal: controller.signal, credentials: 'include' });
         clearTimeout(id);
-        if (!res.ok){
+        if (!res.ok) {
           // mensajes más legibles
           let msg = `Error ${res.status}`;
-          try { const data = await res.json(); if (data?.message) msg = data.message; } catch{}
-          if (res.status === 401){ clearSession(); syncPanels(); showErrorToast('Sesión vencida. Volvé a iniciar sesión.'); }
+          try { const data = await res.json(); if (data?.message) msg = data.message; } catch { }
+          if (res.status === 401) { clearSession(); syncPanels(); showErrorToast('Sesión vencida. Volvé a iniciar sesión.'); }
           throw new Error(msg);
         }
         const contentType = res.headers.get('content-type') || '';
         return contentType.includes('application/json') ? res.json() : res.text();
-      } catch (err){
+      } catch (err) {
         if (err.name === 'AbortError') throw new Error('La solicitud tardó demasiado. Intentá nuevamente.');
         throw err;
       }
@@ -453,11 +756,11 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
     const greeting = document.getElementById('greeting');
     const greetingMobile = document.getElementById('greetingMobile');
 
-    function logout(){ clearSession(); syncPanels(); document.getElementById('inicio').scrollIntoView({behavior:'smooth'}); }
+    function logout() { clearSession(); syncPanels(); document.getElementById('inicio').scrollIntoView({ behavior: 'smooth' }); }
     btnLogout.addEventListener('click', logout);
     btnLogoutMobile.addEventListener('click', logout);
 
-    async function syncPanels(){
+    async function syncPanels() {
       const s = getSession();
       pc.classList.add('hidden'); pa.classList.add('hidden');
       btnLogout.classList.toggle('hidden', !s);
@@ -469,8 +772,8 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
       greeting.textContent = `Hola, ${s.user.name}`;
       greetingMobile.textContent = `Hola, ${s.user.name}`;
 
-      if (s.user.role === 'cliente'){ await renderCliente(); pc.classList.remove('hidden'); pc.scrollIntoView({behavior:'smooth'}); }
-      else { await renderAbogado(); pa.classList.remove('hidden'); pa.scrollIntoView({behavior:'smooth'}); }
+      if (s.user.role === 'cliente') { await renderCliente(); pc.classList.remove('hidden'); pc.scrollIntoView({ behavior: 'smooth' }); }
+      else { await renderAbogado(); pa.classList.remove('hidden'); pa.scrollIntoView({ behavior: 'smooth' }); }
     }
 
     /* ================== Consulta simple ================== */
@@ -481,31 +784,31 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
       const fd = new FormData(e.target);
       const payload = {
         nombre: fd.get('nombre'),
-        email: (fd.get('email')||'').toString().trim(),
+        email: (fd.get('email') || '').toString().trim(),
         mensaje: fd.get('mensaje'),
         consentimiento: document.getElementById('consulta-consent').checked
       };
-      try{
-        await apiFetch('/consultas', { method:'POST', body: JSON.stringify(payload) });
+      try {
+        await apiFetch('/consultas', { method: 'POST', body: JSON.stringify(payload) });
         showToast('¡Consulta enviada! Te responderemos pronto.');
         e.target.reset();
-      } catch(err){ showErrorToast(err.message); }
+      } catch (err) { showErrorToast(err.message); }
       finally { btn.disabled = false; btn.textContent = 'Enviar consulta'; }
     });
 
     /* ================== Modal genérico ================== */
-    function openModal(el){ el.classList.remove('hidden'); document.body.classList.add('modal-open'); }
-    function closeModal(el){ el.classList.add('hidden'); document.body.classList.remove('modal-open'); }
+    function openModal(el) { el.classList.remove('hidden'); document.body.classList.add('modal-open'); }
+    function closeModal(el) { el.classList.add('hidden'); document.body.classList.remove('modal-open'); }
 
     /* ================== Reclamo (sin login) ================== */
     const modalReclamo = document.getElementById('modalReclamo');
     const openReclamoBtn = document.getElementById('btnAbrirReclamo');
     const closeReclamoBtn = document.getElementById('closeReclamo');
     const navReclamo = document.getElementById('navReclamo');
-    openReclamoBtn.addEventListener('click', ()=> openModal(modalReclamo));
-    navReclamo.addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalReclamo); });
-    closeReclamoBtn.addEventListener('click', ()=> closeModal(modalReclamo));
-    modalReclamo.addEventListener('click', (e)=>{ if (e.target === modalReclamo) closeModal(modalReclamo); });
+    openReclamoBtn.addEventListener('click', () => openModal(modalReclamo));
+    navReclamo.addEventListener('click', (e) => { e.preventDefault(); openModal(modalReclamo); });
+    closeReclamoBtn.addEventListener('click', () => closeModal(modalReclamo));
+    modalReclamo.addEventListener('click', (e) => { if (e.target === modalReclamo) closeModal(modalReclamo); });
 
     const steps = Array.from(document.querySelectorAll('#formReclamo .step'));
     const btnPrev = document.getElementById('btnPrev');
@@ -514,16 +817,16 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
     const labelPaso = document.getElementById('labelPaso');
     const dots = [document.getElementById('sd1'), document.getElementById('sd2'), document.getElementById('sd3')];
     let step = 0;
-    function updateStepUI(){
-      steps.forEach((s,i)=> s.classList.toggle('hidden', i!==step));
-      btnPrev.classList.toggle('invisible', step===0);
-      btnNext.classList.toggle('hidden', step===steps.length-1);
-      btnSubmit.classList.toggle('hidden', step!==steps.length-1);
-      labelPaso.textContent = `Paso ${step+1} de 3`;
-      dots.forEach((d,i)=> d.className = 'step-dot w-16 ' + (i<=step ? 'bg-indigo-600' : 'bg-slate-200'));
+    function updateStepUI() {
+      steps.forEach((s, i) => s.classList.toggle('hidden', i !== step));
+      btnPrev.classList.toggle('invisible', step === 0);
+      btnNext.classList.toggle('hidden', step === steps.length - 1);
+      btnSubmit.classList.toggle('hidden', step !== steps.length - 1);
+      labelPaso.textContent = `Paso ${step + 1} de 3`;
+      dots.forEach((d, i) => d.className = 'step-dot w-16 ' + (i <= step ? 'bg-indigo-600' : 'bg-slate-200'));
     }
-    btnPrev.addEventListener('click', ()=>{ if(step>0) step--; updateStepUI(); });
-    btnNext.addEventListener('click', ()=>{ if(step<steps.length-1) step++; updateStepUI(); });
+    btnPrev.addEventListener('click', () => { if (step > 0) step--; updateStepUI(); });
+    btnNext.addEventListener('click', () => { if (step < steps.length - 1) step++; updateStepUI(); });
     updateStepUI();
 
     document.getElementById('formReclamo').addEventListener('submit', async (e) => {
@@ -543,12 +846,12 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
       files.forEach(f => { if (f && f.name) payload.append('archivos', f); });
 
       btnSubmit.disabled = true; btnSubmit.textContent = 'Enviando...';
-      try{
-        await apiFetch('/reclamos', { method:'POST', body: payload, isForm: true });
+      try {
+        await apiFetch('/reclamos', { method: 'POST', body: payload, isForm: true });
         showToast('¡Reclamo enviado! Te contactaremos pronto.');
         closeModal(modalReclamo);
-        form.reset(); step=0; updateStepUI();
-      } catch(err){ showErrorToast(err.message); }
+        form.reset(); step = 0; updateStepUI();
+      } catch (err) { showErrorToast(err.message); }
       finally { btnSubmit.disabled = false; btnSubmit.textContent = 'Enviar reclamo'; }
     });
 
@@ -567,30 +870,31 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
 
     let previousActive = null;
     let focusTrapHandler = null;
-    function focusableElements(root){
+    function focusableElements(root) {
       return Array.from(root.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'))
         .filter(el => el.offsetParent !== null || el.getAttribute('aria-hidden') !== 'true');
     }
-    function trapFocus(modalRoot){
+    function trapFocus(modalRoot) {
       const list = focusableElements(modalRoot); if (!list.length) return;
-      const first = list[0], last = list[list.length-1];
-      focusTrapHandler = function(e){ if(e.key!=='Tab')return;
-        if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
-        else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+      const first = list[0], last = list[list.length - 1];
+      focusTrapHandler = function (e) {
+        if (e.key !== 'Tab') return;
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       };
       modalRoot.addEventListener('keydown', focusTrapHandler);
     }
-    function releaseFocus(){ if (focusTrapHandler){ modalLogin.removeEventListener('keydown', focusTrapHandler); focusTrapHandler=null; } }
-    function openLogin(){ openModal(modalLogin); previousActive=document.activeElement; setTimeout(()=>{ trapFocus(modalLogin); loginCard.focus(); document.getElementById('loginEmail').focus(); },0); }
-    function closeLoginModal(){ releaseFocus(); closeModal(modalLogin); if(previousActive) previousActive.focus(); }
+    function releaseFocus() { if (focusTrapHandler) { modalLogin.removeEventListener('keydown', focusTrapHandler); focusTrapHandler = null; } }
+    function openLogin() { openModal(modalLogin); previousActive = document.activeElement; setTimeout(() => { trapFocus(modalLogin); loginCard.focus(); document.getElementById('loginEmail').focus(); }, 0); }
+    function closeLoginModal() { releaseFocus(); closeModal(modalLogin); if (previousActive) previousActive.focus(); }
 
-    linkLogin.addEventListener('click', (e)=>{ e.preventDefault(); openLogin(); });
-    ctaPanel.addEventListener('click', (e)=>{ const s=getSession(); if(!s){ e.preventDefault(); openLogin(); } else { syncPanels(); } });
+    linkLogin.addEventListener('click', (e) => { e.preventDefault(); openLogin(); });
+    // ctaPanel.addEventListener('click', (e)=>{ const s=getSession(); if(!s){ e.preventDefault(); openLogin(); } else { syncPanels(); } });
     closeLogin.addEventListener('click', closeLoginModal);
-    modalLogin.addEventListener('click', (e)=>{ if (e.target===modalLogin) closeLoginModal(); });
-    document.addEventListener('keydown', (e)=>{ if(!modalLogin.classList.contains('hidden') && e.key==='Escape') closeLoginModal(); });
+    modalLogin.addEventListener('click', (e) => { if (e.target === modalLogin) closeLoginModal(); });
+    document.addEventListener('keydown', (e) => { if (!modalLogin.classList.contains('hidden') && e.key === 'Escape') closeLoginModal(); });
 
-    togglePass.addEventListener('click', ()=> {
+    togglePass.addEventListener('click', () => {
       const isText = loginPass.type === 'text';
       loginPass.type = isText ? 'password' : 'text';
       togglePass.setAttribute('aria-pressed', String(!isText));
@@ -603,104 +907,223 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
       e.preventDefault();
       btnLogin.disabled = true; loginSpinner.classList.remove('hidden'); loginText.textContent = 'Cargando...';
       const fd = new FormData(e.target);
-      const payload = { email: (fd.get('email')||'').toString().trim().toLowerCase(), password: fd.get('password') };
-      try{
-        const data = await apiFetch('/login', { method:'POST', body: JSON.stringify(payload) });
+      const payload = { email: (fd.get('email') || '').toString().trim().toLowerCase(), password: fd.get('password') };
+      try {
+        const data = await apiFetch('/login', { method: 'POST', body: JSON.stringify(payload) });
         if (!data?.accessToken || !data?.user) throw new Error('Respuesta de login inválida');
         setSession({ token: data.accessToken, user: data.user });
         e.target.reset(); closeLoginModal(); showToast(`¡Bienvenido/a, ${data.user.name}!`); syncPanels();
-      } catch(err){ showErrorToast(err.message); }
-      finally { btnLogin.disabled=false; loginSpinner.classList.add('hidden'); loginText.textContent='Entrar'; }
+      } catch (err) { showErrorToast(err.message); }
+      finally { btnLogin.disabled = false; loginSpinner.classList.add('hidden'); loginText.textContent = 'Entrar'; }
     });
 
     /* ================== Render Cliente ================== */
-    async function renderCliente(){
-      // obtener reclamos del usuario
+    async function renderCliente() {
+      // 1) Traer lista básica del usuario
       let lista = [];
-      try{
+      try {
         lista = await apiFetch('/reclamos?mine=true');
-      } catch(err){ showErrorToast(err.message); return; }
-
-      // Tomamos el más reciente
-      const c = (lista||[]).sort((a,b)=> new Date(b.updatedAt||0)-new Date(a.updatedAt||0))[0];
-      if (!c){ document.getElementById('c-codigo').textContent='—';
-        document.getElementById('c-entidad').textContent='—';
-        document.getElementById('c-monto').textContent='—';
-        document.getElementById('c-estado').innerHTML='<span class="px-2 py-0.5 rounded bg-slate-100">Sin reclamos</span>';
-        document.getElementById('c-ultmov').textContent='—';
-        document.getElementById('c-timeline').innerHTML='<li class="text-slate-500">No hay actividad todavía.</li>';
-        document.getElementById('c-mensajes').innerHTML='<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>';
+      } catch (err) {
+        showErrorToast(err.message);
         return;
       }
+
+      // 2) Pintar la tabla de "Mis reclamos"
+      const tbody = document.getElementById('c-tabla');
+      tbody.innerHTML = '';
+      (lista || []).forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-t hover:bg-slate-50';
+        tr.dataset.id = r.id;
+        tr.innerHTML = `
+      <td class="py-3 pr-4 font-medium text-slate-800">${r.codigo || r.id}</td>
+      <td class="py-3 pr-4">${r.entidad || '—'}</td>
+      <td class="py-3 pr-4"><span class="px-2 py-0.5 rounded bg-slate-100">${r.estado || '—'}</span></td>
+      <td class="py-3 pr-4">${(r.updatedAt || '').toString().slice(0, 10) || '—'}</td>
+      <td class="py-3">
+        <button class="px-3 py-1 rounded border text-sm hover:bg-slate-100" data-view="${r.id}">Ver</button>
+      </td>`;
+        tbody.appendChild(tr);
+      });
+
+      // 3) Búsqueda client-side
+      document.getElementById('c-buscar').oninput = (e) => {
+        const q = (e.target.value || '').toLowerCase();
+        Array.from(tbody.rows).forEach(r => {
+          const txt = r.innerText.toLowerCase();
+          r.style.display = txt.includes(q) ? '' : 'none';
+        });
+      };
+
+      // 4) Handler de "Ver" / clic en fila
+      tbody.onclick = async (e) => {
+        const id = e.target.getAttribute('data-view') ||
+          (e.target.closest('tr')?.dataset.id);
+        if (!id) return;
+        try {
+          const detalle = await apiFetch(`/reclamos/${id}`);
+          await renderClienteDetalle(detalle);
+          showToast(`Mostrando ${detalle.codigo || detalle.id}`);
+        } catch (err) {
+          showErrorToast(err.message);
+        }
+      };
+
+      // 5) Auto-seleccionar el más reciente y pintar el detalle
+      const base = (lista || []).sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0))[0];
+      if (!base) {
+        // sin reclamos: limpiar UI
+        document.getElementById('c-codigo').textContent = '—';
+        document.getElementById('c-entidad').textContent = '—';
+        document.getElementById('c-monto').textContent = '—';
+        document.getElementById('c-estado').innerHTML = '<span class="px-2 py-0.5 rounded bg-slate-100">Sin reclamos</span>';
+        document.getElementById('c-ultmov').textContent = '—';
+        document.getElementById('c-timeline').innerHTML = '<li class="text-slate-500">No hay actividad todavía.</li>';
+        document.getElementById('c-mensajes').innerHTML = '<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>';
+        return;
+      }
+      try {
+        const detalle = await apiFetch(`/reclamos/${base.id}`);
+        await renderClienteDetalle(detalle);
+      } catch (err) {
+        // si falla el detalle, mostramos al menos cabecera básica
+        document.getElementById('c-codigo').textContent = base.codigo || base.id;
+        document.getElementById('c-entidad').textContent = base.entidad || '—';
+        document.getElementById('c-monto').textContent = '—';
+        document.getElementById('c-estado').innerHTML = `<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${base.estado || '—'}</span>`;
+        document.getElementById('c-ultmov').textContent = (base.updatedAt || '').slice(0, 10) || '—';
+      }
+
+    }
+
+    async function renderClienteDetalle(c) {
+      // Quitar skeletons
       document.getElementById('c-codigo').classList.remove('skeleton');
       document.getElementById('c-entidad').classList.remove('skeleton');
       document.getElementById('c-monto').classList.remove('skeleton');
       document.getElementById('c-ultmov').classList.remove('skeleton');
 
+      // Cabecera
       document.getElementById('c-codigo').textContent = c.codigo || c.id;
       document.getElementById('c-entidad').textContent = c.entidad || '—';
-      document.getElementById('c-monto').textContent = (c.monto!=null) ? new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS'}).format(c.monto) : '—';
-      document.getElementById('c-estado').innerHTML = `<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${c.estado||'—'}</span>`;
-      document.getElementById('c-ultmov').textContent = (c.updatedAt||'').slice(0,10) || '—';
+      document.getElementById('c-monto').textContent = (c.monto != null)
+        ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(c.monto)
+        : '—';
+      document.getElementById('c-estado').innerHTML =
+        `<span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">${c.estado || '—'}</span>`;
+      document.getElementById('c-ultmov').textContent = (c.updatedAt || '').slice(0, 10) || '—';
 
+      // Timeline
       const tl = document.getElementById('c-timeline');
       tl.innerHTML = '';
-      (c.timeline||[]).forEach(item=>{
-        const color = item.tipo==='ok'?'emerald': item.tipo==='warn'?'amber': item.tipo==='info'?'sky':'indigo';
+      (c.timeline || []).forEach(item => {
+        const tipo = (item.tipo || '').toLowerCase();
+        const dotClass =
+          tipo === 'ok' ? 'bg-emerald-600' :
+            tipo === 'warn' ? 'bg-amber-600' :
+              tipo === 'info' ? 'bg-sky-600' :
+                'bg-indigo-600';
         const li = document.createElement('li');
         li.className = 'relative';
         li.innerHTML = `
-          <span class="absolute -left-[9px] top-0 w-4 h-4 bg-${color}-600 rounded-full ring-4 ring-white"></span>
-          <div class="ml-2">
-            <p class="text-sm text-slate-500">${item.fecha||''}</p>
-            <p class="font-medium text-slate-800">${item.hito||''}</p>
-          </div>`;
+      <span class="absolute -left-[9px] top-0 w-4 h-4 rounded-full ring-4 ring-white ${dotClass}"></span>
+      <div class="ml-2">
+        <p class="text-sm text-slate-500">${(item.fecha || '').toString().slice(0, 10)}</p>
+        <p class="font-medium text-slate-800">${item.hito || ''}</p>
+      </div>`;
         tl.appendChild(li);
       });
-      if (!(c.timeline||[]).length){ tl.innerHTML = '<li class="text-slate-500">Sin eventos aún.</li>'; }
+      if (!(c.timeline || []).length) {
+        tl.innerHTML = '<li class="text-slate-500">Sin eventos aún.</li>';
+      }
 
+
+      // Archivos del caso
+      const filesUl = document.getElementById('c-archivos');
+      if (filesUl) {
+        filesUl.innerHTML = (c.archivos || []).length ? '' : '<li class="text-slate-500 text-sm">Sin archivos.</li>';
+        (c.archivos || []).forEach(a => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+      <a href="${API_BASE + a.url}" target="_blank" class="text-indigo-700 underline">
+        ${a.originalname || a.filename}
+      </a>
+      <span class="text-xs text-slate-500 ml-2">(${Math.round((a.size || 0) / 1024)} KB)</span>`;
+          filesUl.appendChild(li);
+        });
+      }
+
+      // Mensajes
       const box = document.getElementById('c-mensajes');
       box.innerHTML = '';
-      (c.mensajes||[]).forEach(m=>{
-        const mine = (m.de||'').toLowerCase()==='cliente';
+      (c.mensajes || []).forEach(m => {
+        const mine = (m.de || '').toLowerCase() === 'cliente';
         const wrap = document.createElement('div');
-        wrap.className = `flex ${mine?'justify-end':'justify-start'}`;
+        wrap.className = `flex ${mine ? 'justify-end' : 'justify-start'}`;
         wrap.innerHTML = `
-          <div class="max-w-[70%] rounded-lg px-4 py-3 ${mine?'bg-indigo-600 text-white':'bg-white border'}">
-            <div class="text-xs ${mine?'text-indigo-100':'text-slate-500'} mb-1">${m.de||'—'} · ${(m.fecha||'').toString()}</div>
-            <div class="text-sm">${m.texto||''}</div>
-          </div>`;
+      <div class="max-w-[70%] rounded-lg px-4 py-3 ${mine ? 'bg-indigo-600 text-white' : 'bg-white border'}">
+        <div class="text-xs ${mine ? 'text-indigo-100' : 'text-slate-500'} mb-1">
+          ${m.de || '—'} · ${(m.fecha || '').toString()}
+        </div>
+        <div class="text-sm">${m.texto || ''}</div>
+      </div>`;
         box.appendChild(wrap);
       });
-      if (!(c.mensajes||[]).length){ box.innerHTML = '<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>'; }
+      if (!(c.mensajes || []).length) {
+        box.innerHTML = '<div class="text-slate-500 text-sm">Aún no hay mensajes.</div>';
+      }
 
-      // envío simple de mensaje (si tu backend expone endpoint, reemplazar por POST /reclamos/:id/mensajes)
-      document.getElementById('c-msg-send').onclick = async ()=>{
+      // Envío de mensaje
+      document.getElementById('c-msg-send').onclick = async () => {
         const input = document.getElementById('c-msg-input');
-        const text = (input.value||'').trim();
+        const text = (input.value || '').trim();
         if (!text) return;
-        try{
-          await apiFetch(`/reclamos/${c.id}/mensajes`, { method:'POST', body: JSON.stringify({ texto: text }), headers:{} });
-          input.value=''; await renderCliente();
-        }catch(err){ showErrorToast(err.message); }
+        try {
+          await apiFetch(`/reclamos/${c.id}/mensajes`, {
+            method: 'POST',
+            body: JSON.stringify({ texto: text })
+          });
+          input.value = '';
+          // recargar detalle actualizado
+          const nuevo = await apiFetch(`/reclamos/${c.id}`);
+          await renderClienteDetalle(nuevo);
+        } catch (err) { showErrorToast(err.message); }
       };
+
+      const btnUpload = document.getElementById('c-file-send');
+      if (btnUpload) {
+        btnUpload.onclick = async () => {
+          const inp = document.getElementById('c-file');
+          if (!inp?.files?.length) return;
+          const fd = new FormData();
+          Array.from(inp.files).forEach(f => fd.append('archivos', f));
+          try {
+            await apiFetch(`/reclamos/${c.id}/archivos`, { method: 'POST', body: fd, isForm: true });
+            inp.value = '';
+            const nuevo = await apiFetch(`/reclamos/${c.id}`);
+            await renderClienteDetalle(nuevo);
+            showToast('Documento(s) adjuntado(s)');
+          } catch (err) { showErrorToast(err.message); }
+        };
+      }
+
     }
 
     /* ================== Render Abogado ================== */
-    async function renderAbogado(){
+    async function renderAbogado() {
       let casos = [];
-      try{
+      try {
         casos = await apiFetch('/reclamos?limit=100');
-      } catch(err){ showErrorToast(err.message); return; }
+      } catch (err) { showErrorToast(err.message); return; }
 
       // KPIs muy básicos (ajustá reglas según tu lógica)
-      const activos = casos.filter(x=>['En trámite','Esperando entidad','Para firmar demanda'].includes(x.estado)).length;
+      const activos = casos.filter(x => ['En trámite', 'Esperando entidad', 'Para firmar demanda'].includes(x.estado)).length;
       const hoy = new Date();
-      const hace90 = new Date(hoy); hace90.setDate(hoy.getDate()-90);
-      const hace30 = new Date(hoy); hace30.setDate(hoy.getDate()-30);
-      const cautelares = casos.filter(x=> x.tipo==='Cautelar' && new Date(x.createdAt||0)>=hace90 ).length;
-      const exitos = casos.filter(x=> x.estado==='Cerrado con éxito' && new Date(x.updatedAt||0)>=hace30 ).length;
-      const slaRiesgo = casos.filter(x=> x.slaDue && new Date(x.slaDue) <= hoy ).length;
+      const hace90 = new Date(hoy); hace90.setDate(hoy.getDate() - 90);
+      const hace30 = new Date(hoy); hace30.setDate(hoy.getDate() - 30);
+      const cautelares = casos.filter(x => x.tipo === 'Cautelar' && new Date(x.createdAt || 0) >= hace90).length;
+      const exitos = casos.filter(x => x.estado === 'Cerrado con éxito' && new Date(x.updatedAt || 0) >= hace30).length;
+      const slaRiesgo = casos.filter(x => x.slaDue && new Date(x.slaDue) <= hoy).length;
 
       document.getElementById('kpi-activos').textContent = activos;
       document.getElementById('kpi-cautelares').textContent = cautelares;
@@ -709,14 +1132,14 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
 
       const tbody = document.getElementById('tablaCasos');
       tbody.innerHTML = '';
-      casos.forEach(c=>{
-        const tr=document.createElement('tr'); tr.className='border-t';
+      casos.forEach(c => {
+        const tr = document.createElement('tr'); tr.className = 'border-t';
         tr.innerHTML = `
-          <td class="py-3 pr-4 font-medium text-slate-800">${c.codigo||c.id}</td>
-          <td class="py-3 pr-4">${c.cliente?.nombre||c.clienteNombre||'—'}</td>
-          <td class="py-3 pr-4">${c.entidad||'—'}</td>
-          <td class="py-3 pr-4"><span class="px-2 py-0.5 rounded bg-slate-100">${c.estado||'—'}</span></td>
-          <td class="py-3 pr-4">${(c.slaDue||'').toString().slice(0,10)||'—'}</td>
+          <td class="py-3 pr-4 font-medium text-slate-800">${c.codigo || c.id}</td>
+          <td class="py-3 pr-4">${c.cliente?.nombre || c.clienteNombre || '—'}</td>
+          <td class="py-3 pr-4">${c.entidad || '—'}</td>
+          <td class="py-3 pr-4"><span class="px-2 py-0.5 rounded bg-slate-100">${c.estado || '—'}</span></td>
+          <td class="py-3 pr-4">${(c.slaDue || '').toString().slice(0, 10) || '—'}</td>
           <td class="py-3">
             <button class="px-3 py-1 rounded border text-sm hover:bg-slate-100" data-view="${c.id}">Ver</button>
             <button class="px-3 py-1 rounded bg-indigo-600 text-white text-sm hover:bg-indigo-700 ml-2" data-update="${c.id}">Actualizar</button>
@@ -725,60 +1148,112 @@ fetch(`${API_BASE}/reclamos?mine=true`, {
       });
 
       // buscar en tabla (client-side)
-      document.getElementById('searchCasos').oninput = (e)=>{
+      document.getElementById('searchCasos').oninput = (e) => {
         const q = e.target.value.toLowerCase();
-        Array.from(tbody.rows).forEach(r=>{
+        Array.from(tbody.rows).forEach(r => {
           const txt = r.innerText.toLowerCase();
           r.style.display = txt.includes(q) ? '' : 'none';
         });
       };
 
       // ejemplo de handlers (ajustar a tus endpoints)
-      tbody.addEventListener('click', async (e)=>{
+      tbody.addEventListener('click', async (e) => {
         const id = e.target.getAttribute('data-update') || e.target.getAttribute('data-view');
         if (!id) return;
-        if (e.target.getAttribute('data-update')){
-          try{
-            await apiFetch(`/reclamos/${id}`, { method:'PATCH', body: JSON.stringify({ estado:'En trámite' }) });
-            showToast(`Caso ${id} actualizado`); renderAbogado();
-          }catch(err){ showErrorToast(err.message); }
+
+        if (e.target.getAttribute('data-update')) {
+          // abrir modal de actualización
+          openUpdate(id);
         } else {
-          // Ver detalle: podrías abrir un modal con GET /reclamos/:id
-          try{
+          // Ver detalle en consola (lo dejás como está, o armás un modal aparte si querés)
+          try {
             const detalle = await apiFetch(`/reclamos/${id}`);
             console.log('Detalle', detalle);
             showToast(`Abrí consola para ver detalle ${id}`);
-          }catch(err){ showErrorToast(err.message); }
+          } catch (err) { showErrorToast(err.message); }
         }
       });
+
 
       // Tareas demo (si tenés endpoint real, reemplazá esto)
       const ul = document.getElementById('listaTareas');
       ul.innerHTML = '';
-      casos.slice(0,5).forEach((c,i)=>{
-        const li=document.createElement('li');
-        li.className='flex items-center justify-between p-3 rounded border';
+      casos.slice(0, 5).forEach((c, i) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between p-3 rounded border';
         li.innerHTML = `
-          <div><p class="font-medium text-slate-800">Revisar documentación ${c.codigo||c.id}</p>
-          <p class="text-xs text-slate-500">Vence: ${(c.slaDue||'').toString().slice(0,10) || '—'}</p></div>
+          <div><p class="font-medium text-slate-800">Revisar documentación ${c.codigo || c.id}</p>
+          <p class="text-xs text-slate-500">Vence: ${(c.slaDue || '').toString().slice(0, 10) || '—'}</p></div>
           <div class="flex items-center gap-2">
             <button class="px-3 py-1 rounded border text-sm hover:bg-slate-100">Editar</button>
             <button class="px-3 py-1 rounded bg-emerald-600 text-white text-sm hover:bg-emerald-700">Hecho</button>
           </div>`;
         ul.appendChild(li);
       });
-      document.getElementById('btnAddTarea').onclick = ()=> showToast('Implementar POST /tareas (placeholder)');
+      document.getElementById('btnAddTarea').onclick = () => showToast('Implementar POST /tareas (placeholder)');
     }
+
+    // let updateId = null;
+    // function openUpdate(id) {
+    //   updateId = id;
+    //   document.getElementById('modalUpdate').classList.remove('hidden');
+    // }
+    // function closeUpdate() {
+    //   document.getElementById('modalUpdate').classList.add('hidden');
+    //   updateId = null;
+    //   document.getElementById('formUpdate').reset();
+    // }
+    // document.getElementById('updClose').onclick = closeUpdate;
+    // document.getElementById('updCancel').onclick = closeUpdate;
+
+    document.getElementById('formUpdate').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!updateId) return;
+
+      const estado = document.getElementById('updEstado').value.trim();
+      const montoStr = document.getElementById('updMonto').value.trim();
+      const hito = document.getElementById('updHito').value.trim();
+      const tipo = document.getElementById('updTipo').value.trim() || 'info';
+      const msg = document.getElementById('updMsg').value.trim();
+
+      const body = {};
+      if (estado) body.estado = estado;
+      if (montoStr) body.monto = Number(montoStr);
+      if (hito) body.timelineItem = { hito, tipo };
+      if (msg) body.mensaje = { texto: msg };
+
+      try {
+        await apiFetch(`/reclamos/${updateId}`, { method: 'PATCH', body: JSON.stringify(body) });
+        closeUpdate();
+        showToast('Reclamo actualizado');
+        await renderAbogado();
+      } catch (err) { showErrorToast(err.message); }
+    });
+
 
     /* ================== Init ================== */
     // CTA seguir mi reclamo: si hay sesión, va directo; sino abre login
-    document.getElementById('ctaPanel').addEventListener('click', (e)=>{ const s=getSession(); if(!s){ e.preventDefault(); openLogin(); } else { syncPanels(); } });
+    document.getElementById('ctaPanel').addEventListener('click', (e) => {
+      e.preventDefault();
+      const s = getSession();
+      if (!s) openLogin();
+      else syncPanels();
+    });
 
     // abrir reclamo desde nav
-    document.getElementById('navReclamo').addEventListener('click', (e)=>{ e.preventDefault(); openModal(modalReclamo); });
+    // document.getElementById('navReclamo').addEventListener('click', (e) => { e.preventDefault(); openModal(modalReclamo); });
 
     // primera sync
     syncPanels();
   </script>
+
+  <!-- Safelist de clases Tailwind usadas dinámicamente -->
+  <div class="hidden">
+    bg-emerald-600 bg-amber-600 bg-sky-600 bg-indigo-600
+  </div>
+
+
+
 </body>
+
 </html>
