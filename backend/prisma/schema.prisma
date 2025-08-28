@@ -24,10 +24,13 @@ model AppUser {
   passwordHash String   @map("password_hash")
   role         Role
   name         String
+  telefono     String?    @db.VarChar(20)
+  dni          String?    @db.VarChar(15)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@map("app_users")
 }
+
 
 model Consulta {
   id             String   @id @default(uuid()) @db.Uuid
@@ -51,6 +54,9 @@ model Reclamo {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt  DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
   slaDue     DateTime? @map("sla_due") @db.Timestamptz(6)
+  dni           String?    @db.VarChar(15)
+  telefono      String?    @db.VarChar(20)
+  fechaIncidente DateTime? @map("fecha_incidente") @db.Timestamptz(6)
 
   timeline   ReclamoTimeline[]
   mensajes   ReclamoMensaje[]
