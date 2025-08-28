@@ -279,6 +279,7 @@ app.post('/reclamos', upload.array('archivos'), async (req, res) => {
       console.log(`✅ Usuario creado: ${email} con password temporal: ${tempPassword}`);
     }
 
+  return res.status(201).json({ id });    
     // ... resto del código original para crear reclamo
 
   } catch (error) {
@@ -286,6 +287,9 @@ app.post('/reclamos', upload.array('archivos'), async (req, res) => {
     return res.status(500).json({ message: 'Error interno: ' + error.message });
   }
 });
+
+
+
 // Listar reclamos (cliente/abogado)
 app.get('/reclamos', auth, async (req, res) => {
   const { mine, limit } = req.query;
