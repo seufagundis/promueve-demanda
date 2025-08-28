@@ -32,6 +32,18 @@ const ENV_ORIGINS = (process.env.CORS_ORIGIN || '')
   .map(s => s.trim().replace(/\/$/, ''))
   .filter(Boolean);
 
+// Agregar logging detallado de todas las requests
+app.use((req, res, next) => {
+  console.log('=== NUEVA REQUEST ===');
+  console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  console.log('Files:', req.files);
+  console.log('=====================');
+  next();
+});
+
+
 const corsOptions = {
   origin(origin, cb) {
     if (!origin) return cb(null, true); // curl/Postman
@@ -221,110 +233,40 @@ app.post('/consultas', async (req, res) => {
 // Reclamos (público: permite iniciar sin login; si hay token, se asocia al usuario)
 app.post('/reclamos', upload.array('archivos'), async (req, res) => {
   try {
+    console.log('🎯 RECLAMO - Body completo:', JSON.stringify(req.body, null, 2));
+    console.log('🎯 RECLAMO - Files:', req.files);
+    
     const { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion } = req.body || {};
     
+    console.log('🎯 RECLAMO - Campos extraídos:', {
+      nombre, dni, telefono, email, entidad, fechaIncidente, descripcion
+    });
+
+    // Validación básica
     if (!nombre || !dni || !telefono || !email || !entidad || !descripcion) {
+      console.log('❌ Faltan campos obligatorios');
       return res.status(400).json({ message: 'Faltan campos obligatorios' });
     }
 
-    // 1. VERIFICAR O CREAR USUARIO
-    let user = await prisma.appUser.findUnique({
-      where: { email: email.toLowerCase() }
-    });
+    // SIMULAR ÉXITO TEMPORALMENTE
+    console.log('✅ Simulación exitosa');
+    return res.status(201).json({ id: 'test-id-simulado' });
 
-    if (!user) {
-      const tempPassword = Math.random().toString(36).slice(-8);
-      const passwordHash = await bcrypt.hash(tempPassword, 10);
-      
-      user = await prisma.appUser.create({
-        data: {
-          email: email.toLowerCase(),
-          name: nombre,
-          passwordHash,
-          telefono: telefono,
-          dni: dni
-        }
-      });
-      console.log(`Usuario creado: ${email} con password temporal: ${tempPassword}`);
-    }
+    // // COMENTA TEMPORALMENTE el resto del código...
+    // let user = await prisma.appUser.findUnique({
+    //   where: { email: email.toLowerCase() }
+    // });
+    // ... resto del código comentado
 
-    // 2. CREAR RECLAMO
-    const id = uuid();
-    const codigo = `PL-${dayjs().year()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(4, '0')}`;
-
-    const archivos = (req.files || []).map(f => ({
-      id: uuid(),
-      filename: f.filename,
-      originalname: f.originalname,
-      mimetype: f.mimetype,
-      url: `/uploads/${f.filename}`,
-      size: f.size
-    }));
-
-    // Crear reclamo con nuevos campos
-    await prisma.reclamo.create({
-      data: {
-        id,
-        codigo,
-        ownerEmail: email.toLowerCase(),
-        entidad,
-        dni: dni,
-        telefono: telefono,
-        fechaIncidente: fechaIncidente ? new Date(fechaIncidente) : null,
-        monto: null,
-        estado: 'Recibido',
-        tipo: 'Ordinario',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        slaDue: dayjs().add(7, 'day').toDate()
-      }
-    });
-
-    // Timeline inicial
-    await prisma.reclamoTimeline.create({
-      data: {
-        id: uuid(),
-        reclamoId: id,
-        fecha: new Date(),
-        hito: 'Reclamo iniciado por el cliente',
-        tipo: 'ok'
-      }
-    });
-
-    // Mensaje inicial
-    await prisma.reclamoMensaje.create({
-      data: {
-        id: uuid(),
-        reclamoId: id,
-        autor: 'Cliente',
-        texto: descripcion,
-        creadoEn: new Date()
-      }
-    });
-
-    // Archivos (si hay)
-    if (archivos.length) {
-      await prisma.reclamoArchivo.createMany({
-        data: archivos.map(a => ({
-          id: a.id,
-          reclamoId: id,
-          filename: a.filename,
-          originalname: a.originalname,
-          mimetype: a.mimetype,
-          url: a.url,
-          size: a.size
-        }))
-      });
-    }
-
-    return res.status(201).json({ id });
-    
   } catch (error) {
-    console.error('Error creating reclamo:', error);
-    return res.status(500).json({ message: 'Error interno del servidor' });
+    console.error('💥 ERROR EN RECLAMO:', error);
+    console.error('💥 Stack trace:', error.stack);
+    return res.status(500).json({ 
+      message: 'Error interno: ' + error.message,
+      details: error.stack 
+    });
   }
 });
-
 // Listar reclamos (cliente/abogado)
 app.get('/reclamos', auth, async (req, res) => {
   const { mine, limit } = req.query;
