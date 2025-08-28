@@ -98,3 +98,4 @@ model ReclamoArchivo {
 
   @@map("reclamo_archivos")
 }
+
