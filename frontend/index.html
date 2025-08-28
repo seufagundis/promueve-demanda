@@ -682,10 +682,12 @@
     // Permite override con ?api=https://... para pruebas
     const apiOverride = new URLSearchParams(location.search).get('api');
 
-    const API_BASE = apiOverride ||
-      (location.hostname.endsWith('vercel.app')
-        ? 'https://promueve-demanda.onrender.com'   // producción (demo)
-        : 'http://localhost:4000');                  // desarrollo local
+    const API_BASE = 'http://localhost:4000';  // ← SOLO LOCALHOST
+    
+    // const API_BASE = apiOverride ||
+    //   (location.hostname.endsWith('vercel.app')
+    //     ? 'https://promueve-demanda.onrender.com'   // producción (demo)
+    //     : 'http://localhost:4000');                  // desarrollo local
 
     // opcional: hacelo visible en consola
     console.log('API_BASE =', API_BASE);
