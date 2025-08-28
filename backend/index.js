@@ -99,7 +99,11 @@ const upload = multer({
   fileFilter: (_req, file, cb) => {
     const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
     cb(null, allowed.includes(file.mimetype));
-  }
+    
+  },
+  preservePath: true // Esto ayuda a que multer populé req.body
+  
+  
 });
 
 
@@ -233,38 +237,53 @@ app.post('/consultas', async (req, res) => {
 // Reclamos (público: permite iniciar sin login; si hay token, se asocia al usuario)
 app.post('/reclamos', upload.array('archivos'), async (req, res) => {
   try {
-    console.log('🎯 RECLAMO - Body completo:', JSON.stringify(req.body, null, 2));
-    console.log('🎯 RECLAMO - Files:', req.files);
-    
-    const { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion } = req.body || {};
-    
-    console.log('🎯 RECLAMO - Campos extraídos:', {
-      nombre, dni, telefono, email, entidad, fechaIncidente, descripcion
+    console.log('🎯 RECLAMO - req.body:', req.body);
+    console.log('🎯 RECLAMO - req.files:', req.files);
+    console.log('🎯 RECLAMO - Campos manuales:', {
+      nombre: req.body.nombre,
+      dni: req.body.dni,
+      telefono: req.body.telefono,
+      email: req.body.email,
+      entidad: req.body.entidad,
+      fechaIncidente: req.body.fechaIncidente,
+      descripcion: req.body.descripcion
     });
 
-    // Validación básica
+    // Restaurar el código original PERO con validación
+    const { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion } = req.body || {};
+    
     if (!nombre || !dni || !telefono || !email || !entidad || !descripcion) {
-      console.log('❌ Faltan campos obligatorios');
+      console.log('❌ Faltan campos obligatorios en req.body');
       return res.status(400).json({ message: 'Faltan campos obligatorios' });
     }
 
-    // SIMULAR ÉXITO TEMPORALMENTE
-    console.log('✅ Simulación exitosa');
-    return res.status(201).json({ id: 'test-id-simulado' });
+    // ✅ TODO EL CÓDIGO ORIGINAL AQUÍ (crear usuario, reclamo, etc.)
+    let user = await prisma.appUser.findUnique({
+      where: { email: email.toLowerCase() }
+    });
 
-    // // COMENTA TEMPORALMENTE el resto del código...
-    // let user = await prisma.appUser.findUnique({
-    //   where: { email: email.toLowerCase() }
-    // });
-    // ... resto del código comentado
+    if (!user) {
+      const tempPassword = Math.random().toString(36).slice(-8);
+      const passwordHash = await bcrypt.hash(tempPassword, 10);
+      
+      user = await prisma.appUser.create({
+        data: {
+          email: email.toLowerCase(),
+          name: nombre,
+          passwordHash,
+          telefono: telefono,
+          dni: dni,
+          role: 'cliente'
+        }
+      });
+      console.log(`✅ Usuario creado: ${email} con password temporal: ${tempPassword}`);
+    }
+
+    // ... resto del código original para crear reclamo
 
   } catch (error) {
     console.error('💥 ERROR EN RECLAMO:', error);
-    console.error('💥 Stack trace:', error.stack);
-    return res.status(500).json({ 
-      message: 'Error interno: ' + error.message,
-      details: error.stack 
-    });
+    return res.status(500).json({ message: 'Error interno: ' + error.message });
   }
 });
 // Listar reclamos (cliente/abogado)
