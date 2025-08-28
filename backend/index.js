@@ -99,11 +99,7 @@ const upload = multer({
   fileFilter: (_req, file, cb) => {
     const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
     cb(null, allowed.includes(file.mimetype));
-    
-  },
-  preservePath: true // Esto ayuda a que multer populé req.body
-  
-  
+  }
 });
 
 
@@ -237,32 +233,21 @@ app.post('/consultas', async (req, res) => {
 // Reclamos (público: permite iniciar sin login; si hay token, se asocia al usuario)
 app.post('/reclamos', upload.array('archivos'), async (req, res) => {
   try {
-    console.log('🎯 RECLAMO - req.body:', req.body);
-    console.log('🎯 RECLAMO - req.files:', req.files);
-    console.log('🎯 RECLAMO - Campos manuales:', {
-      nombre: req.body.nombre,
-      dni: req.body.dni,
-      telefono: req.body.telefono,
-      email: req.body.email,
-      entidad: req.body.entidad,
-      fechaIncidente: req.body.fechaIncidente,
-      descripcion: req.body.descripcion
-    });
-
-    // Restaurar el código original PERO con validación
     const { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion } = req.body || {};
     
+    console.log('📦 Datos recibidos:', { nombre, dni, telefono, email, entidad, fechaIncidente, descripcion });
+    
     if (!nombre || !dni || !telefono || !email || !entidad || !descripcion) {
-      console.log('❌ Faltan campos obligatorios en req.body');
       return res.status(400).json({ message: 'Faltan campos obligatorios' });
     }
 
-    // ✅ TODO EL CÓDIGO ORIGINAL AQUÍ (crear usuario, reclamo, etc.)
+    // 1. VERIFICAR O CREAR USUARIO AUTOMÁTICAMENTE
     let user = await prisma.appUser.findUnique({
       where: { email: email.toLowerCase() }
     });
 
     if (!user) {
+      console.log('👤 Usuario no existe, creando nuevo...');
       const tempPassword = Math.random().toString(36).slice(-8);
       const passwordHash = await bcrypt.hash(tempPassword, 10);
       
@@ -277,19 +262,99 @@ app.post('/reclamos', upload.array('archivos'), async (req, res) => {
         }
       });
       console.log(`✅ Usuario creado: ${email} con password temporal: ${tempPassword}`);
+      
+      // 📧 Aquí después podrás agregar el envío de email con la contraseña temporal
+    } else {
+      console.log('👤 Usuario existente:', user.email);
     }
 
-  return res.status(201).json({ id });    
-    // ... resto del código original para crear reclamo
+    // 2. CREAR RECLAMO
+    const id = uuid();
+    const codigo = `PL-${dayjs().year()}-${String(Math.floor(Math.random() * 9000) + 1000).padStart(4, '0')}`;
 
+    console.log('📋 Creando reclamo con código:', codigo);
+    
+    // Crear reclamo con todos los campos
+    await prisma.reclamo.create({
+      data: {
+        id,
+        codigo,
+        ownerEmail: email.toLowerCase(),
+        entidad,
+        dni: dni,
+        telefono: telefono,
+        fechaIncidente: fechaIncidente ? new Date(fechaIncidente) : null,
+        monto: null,
+        estado: 'Recibido',
+        tipo: 'Ordinario',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        slaDue: dayjs().add(7, 'day').toDate()
+      }
+    });
+
+    // 3. TIMELINE INICIAL
+    await prisma.reclamoTimeline.create({
+      data: {
+        id: uuid(),
+        reclamoId: id,
+        fecha: new Date(),
+        hito: 'Reclamo iniciado por el cliente',
+        tipo: 'ok'
+      }
+    });
+
+    // 4. MENSAJE INICIAL
+    await prisma.reclamoMensaje.create({
+      data: {
+        id: uuid(),
+        reclamoId: id,
+        autor: 'Cliente',
+        texto: descripcion,
+        creadoEn: new Date()
+      }
+    });
+
+    // 5. ARCHIVOS (SI HAY) 
+    if (req.files && req.files.length > 0) {
+      console.log('📎 Procesando archivos:', req.files.length);
+      
+      const archivos = req.files.map(f => ({
+        id: uuid(),
+        reclamoId: id,
+        filename: f.filename,
+        originalname: f.originalname,
+        mimetype: f.mimetype,
+        url: `/uploads/${f.filename}`,
+        size: f.size
+      }));
+
+      await prisma.reclamoArchivo.createMany({
+        data: archivos
+      });
+      console.log(`✅ Archivos guardados: ${archivos.length}`);
+    }
+
+    console.log(`🎉 Reclamo creado exitosamente: ${id}`);
+    
+    // 6. ENVIAR RESPUESTA AL CLIENTE
+    return res.status(201).json({ 
+      id,
+      message: 'Reclamo creado exitosamente',
+      usuarioCreado: !user, // Indica si se creó un nuevo usuario
+      codigo: codigo
+    });
+    
   } catch (error) {
-    console.error('💥 ERROR EN RECLAMO:', error);
-    return res.status(500).json({ message: 'Error interno: ' + error.message });
+    console.error('💥 Error creating reclamo:', error);
+    console.error('📋 Stack trace:', error.stack);
+    
+    return res.status(500).json({ 
+      message: 'Error interno del servidor',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Contacte al administrador'
+    });
   }
 });
-
-
-
 // Listar reclamos (cliente/abogado)
 app.get('/reclamos', auth, async (req, res) => {
   const { mine, limit } = req.query;
