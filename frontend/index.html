@@ -115,6 +115,11 @@
         background-position: -100% 0
       }
     }
+
+    .hidden { 
+  display: none !important; 
+}
+
   </style>
 </head>
 
@@ -761,40 +766,65 @@
     btnLogoutMobile.addEventListener('click', logout);
 
     async function syncPanels() {
-      const s = getSession();
-      pc.classList.add('hidden'); pa.classList.add('hidden');
-      btnLogout.classList.toggle('hidden', !s);
-      btnLogoutMobile.classList.toggle('hidden', !s);
-      greeting.classList.toggle('hidden', !s);
-      greetingMobile.classList.toggle('hidden', !s);
-      if (!s) return;
-
-      greeting.textContent = `Hola, ${s.user.name}`;
-      greetingMobile.textContent = `Hola, ${s.user.name}`;
-
-      if (s.user.role === 'cliente') { await renderCliente(); pc.classList.remove('hidden'); pc.scrollIntoView({ behavior: 'smooth' }); }
-      else { await renderAbogado(); pa.classList.remove('hidden'); pa.scrollIntoView({ behavior: 'smooth' }); }
+  const s = getSession();
+  console.log('Usuario logueado:', s ? s.user.email : 'No logueado');
+  
+  // 1. OCULTAR PANELS PRINCIPALES (esto ya funciona)
+  const pc = document.getElementById('panelCliente');
+  const pa = document.getElementById('panelAbogado');
+  if (pc) pc.classList.add('hidden');
+  if (pa) pa.classList.add('hidden');
+  
+  // 2. MANEJO SEGURO DE ELEMENTOS DEL NAVBAR
+  const elements = {
+    linkLogin: document.getElementById('linkLogin'),
+    navReclamo: document.getElementById('navReclamo'),
+    greeting: document.getElementById('greeting'),
+    greetingMobile: document.getElementById('greetingMobile'),
+    btnLogout: document.getElementById('btnLogout'),
+    btnLogoutMobile: document.getElementById('btnLogoutMobile')
+  };
+  
+  // Verificar qué elementos existen
+  Object.keys(elements).forEach(key => {
+    if (!elements[key]) {
+      console.warn('Elemento no encontrado:', key);
     }
-
-    /* ================== Consulta simple ================== */
-    document.getElementById('formConsulta').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('btnEnviarConsulta');
-      btn.disabled = true; btn.textContent = 'Enviando...';
-      const fd = new FormData(e.target);
-      const payload = {
-        nombre: fd.get('nombre'),
-        email: (fd.get('email') || '').toString().trim(),
-        mensaje: fd.get('mensaje'),
-        consentimiento: document.getElementById('consulta-consent').checked
-      };
-      try {
-        await apiFetch('/consultas', { method: 'POST', body: JSON.stringify(payload) });
-        showToast('¡Consulta enviada! Te responderemos pronto.');
-        e.target.reset();
-      } catch (err) { showErrorToast(err.message); }
-      finally { btn.disabled = false; btn.textContent = 'Enviar consulta'; }
-    });
+  });
+  
+  if (s) {
+    // USUARIO LOGUEADO - Mostrar solo elementos de sesión
+    if (elements.linkLogin) elements.linkLogin.style.display = 'none';
+    if (elements.navReclamo) elements.navReclamo.style.display = 'none';
+    if (elements.greeting) {
+      elements.greeting.style.display = 'block';
+      elements.greeting.textContent = `Hola, ${s.user.name}`;
+    }
+    if (elements.greetingMobile) {
+      elements.greetingMobile.style.display = 'block';
+      elements.greetingMobile.textContent = `Hola, ${s.user.name}`;
+    }
+    if (elements.btnLogout) elements.btnLogout.style.display = 'block';
+    if (elements.btnLogoutMobile) elements.btnLogoutMobile.style.display = 'block';
+    
+    // Cargar panel según rol
+    if (s.user.role === 'cliente') {
+      if (pc) pc.classList.remove('hidden');
+      renderCliente();
+    } else {
+      if (pa) pa.classList.remove('hidden');
+      renderAbogado();
+    }
+  } else {
+    // USUARIO NO LOGUEADO - Mostrar solo login y reclamo
+    if (elements.linkLogin) elements.linkLogin.style.display = 'block';
+    if (elements.navReclamo) elements.navReclamo.style.display = 'block';
+    if (elements.greeting) elements.greeting.style.display = 'none';
+    if (elements.greetingMobile) elements.greetingMobile.style.display = 'none';
+    if (elements.btnLogout) elements.btnLogout.style.display = 'none';
+    if (elements.btnLogoutMobile) elements.btnLogoutMobile.style.display = 'none';
+  }
+}
 
     /* ================== Modal genérico ================== */
     function openModal(el) { el.classList.remove('hidden'); document.body.classList.add('modal-open'); }
